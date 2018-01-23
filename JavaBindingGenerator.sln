@@ -1,9 +1,9 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Driver", "BindingGenerator\Driver.csproj", "{9B0EAD96-B5BF-4C52-BCA7-9A6455D318E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Driver", "tools\BindingGenerator\Driver.csproj", "{9B0EAD96-B5BF-4C52-BCA7-9A6455D318E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BindingGenerator.Core", "BindingGenerator.Core\BindingGenerator.Core.csproj", "{8CC94A3E-B6D6-4D9D-8FCA-6CBE86B69F64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Java.Interop.Bindings", "src\Java.Interop.Bindings\Java.Interop.Bindings.csproj", "{8CC94A3E-B6D6-4D9D-8FCA-6CBE86B69F64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8CC94A3E-B6D6-4D9D-8FCA-6CBE86B69F64}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Java.Interop.Bindings</RootNamespace>
+    <AssemblyName>Java.Interop.Bindings</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Extensions.XObject.cs" />
+    <Compile Include="InputDocument.cs" />
+    <Compile Include="Extensions.XElement.cs" />
+    <Compile Include="Extensions.HierarchyElement.cs" />
+    <Compile Include="Report.cs" />
+    <Compile Include="LogLevel.cs" />
+    <Compile Include="Extensions.String.cs" />
+    <Compile Include="Syntax\ApiClass.cs" />
+    <Compile Include="Syntax\ApiConstructor.cs" />
+    <Compile Include="Syntax\ApiDescriptionReader.cs" />
+    <Compile Include="Syntax\ApiElement.cs" />
+    <Compile Include="Syntax\ApiException.cs" />
+    <Compile Include="Syntax\ApiField.cs" />
+    <Compile Include="Syntax\ApiFixupApplier.cs" />
+    <Compile Include="Syntax\ApiImplements.cs" />
+    <Compile Include="Syntax\ApiInterface.cs" />
+    <Compile Include="Syntax\ApiMethod.cs" />
+    <Compile Include="Syntax\ApiMethodParameter.cs" />
+    <Compile Include="Syntax\ApiNameSpace.cs" />
+    <Compile Include="Syntax\ApiType.cs" />
+    <Compile Include="Syntax\ApiTypeMember.cs" />
+    <Compile Include="Syntax\ApiTypeParameter.cs" />
+    <Compile Include="Syntax\ApiTypeParameterGenericConstraint.cs" />
+    <Compile Include="Syntax\ApiTypeParameterGenericConstraints.cs" />
+    <Compile Include="Syntax\ApiTypeParameters.cs" />
+    <Compile Include="Syntax\ApiVisibility.cs" />
+    <Compile Include="Compiler\Generator.cs" />
+    <Compile Include="Compiler\NameTranslationProvider.cs" />
+    <Compile Include="Compiler\OutputPathProvider.cs" />
+    <Compile Include="Compiler\DefaultOutputPathProvider.cs" />
+    <Compile Include="Compiler\FilesystemPath.cs" />
+    <Compile Include="Compiler\HierarchyNamespace.cs" />
+    <Compile Include="Compiler\HierarchyElement.cs" />
+    <Compile Include="Syntax\ApiEnum.cs" />
+    <Compile Include="Compiler\GeneratorContext.cs" />
+    <Compile Include="Compiler\Hierarchy.cs" />
+    <Compile Include="Compiler\HierarchyClass.cs" />
+    <Compile Include="Compiler\HierarchyInterface.cs" />
+    <Compile Include="Compiler\HierarchyObject.cs" />
+    <Compile Include="Compiler\HierarchyEnum.cs" />
+    <Compile Include="Compiler\HierarchyTypeMember.cs" />
+    <Compile Include="Compiler\HierarchyBase.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Compiler\HierarchyTypeKind.cs" />
+    <Compile Include="Compiler\HierarchyField.cs" />
+    <Compile Include="Compiler\HierarchyMethod.cs" />
+    <Compile Include="Compiler\HierarchyConstructor.cs" />
+    <Compile Include="Compiler\HierarchyImplements.cs" />
+    <Compile Include="Compiler\HierarchyTypeParameter.cs" />
+    <Compile Include="Compiler\HierarchyMethodParameter.cs" />
+    <Compile Include="Compiler\HierarchyException.cs" />
+    <Compile Include="Compiler\HierarchyTypeParameterGenericConstraint.cs" />
+    <Compile Include="Compiler\HierarchyType.cs" />
+    <Compile Include="Compiler\FormattingCodeGenerator.cs" />
+    <Compile Include="Compiler\CSharp\DefaultCSharpCodeGenerator.cs" />
+    <Compile Include="Compiler\CSharp\BaseMethodCodeGenerator.cs" />
+    <Compile Include="Compiler\CSharp\BaseClassCodeGenerator.cs" />
+    <Compile Include="Compiler\CSharp\BaseEnumCodeGenerator.cs" />
+    <Compile Include="Compiler\CSharp\BaseInterfaceCodeGenerator.cs" />
+    <Compile Include="Compiler\FormattingStyle.cs" />
+    <Compile Include="Compiler\FormattingContext.cs" />
+    <Compile Include="Compiler\MethodCodeGenerator.cs" />
+    <Compile Include="Compiler\TypeMemberCodeGenerator.cs" />
+    <Compile Include="Compiler\FieldCodeGenerator.cs" />
+    <Compile Include="Compiler\InterfaceCodeGenerator.cs" />
+    <Compile Include="Compiler\ClassCodeGenerator.cs" />
+    <Compile Include="Compiler\EnumCodeGenerator.cs" />
+    <Compile Include="Compiler\Xamarin\XamarinAndroidHierarchy.cs" />
+    <Compile Include="Compiler\HierarchyInterfaceInvoker.cs" />
+    <Compile Include="Compiler\HierarchyCustomAttribute.cs" />
+    <Compile Include="Compiler\HierarchyCustomAttributeTarget.cs" />
+    <Compile Include="Compiler\HierarchyAttributeRegister.cs" />
+    <Compile Include="Compiler\HierarchyAttributeIntDefinition.cs" />
+    <Compile Include="Compiler\HierarchyAttributeObsolete.cs" />
+    <Compile Include="Compiler\HierarchyAttributeFlags.cs" />
+    <Compile Include="Compiler\HierarchyAttributeGeneratedEnum.cs" />
+    <Compile Include="Compiler\HierarchyAttributeRequiresPermission.cs" />
+    <Compile Include="Compiler\HierarchyAttributeAnnotation.cs" />
+    <Compile Include="Compiler\HierarchyAttributePreserve.cs" />
+    <Compile Include="Compiler\HierarchyAttributeNamespaceMapping.cs" />
+    <Compile Include="Compiler\HierarchyCustomAttributeGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeObsoleteGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeParameterlessGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeFlagsGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeGeneratedEnumGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributePreserveGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeAnnotationGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeNamespaceMappingGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeRequiresPermissionGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeRegisterGenerator.cs" />
+    <Compile Include="Compiler\HierarchyAttributeIntDefinitionGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Syntax\" />
+    <Folder Include="Compiler\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

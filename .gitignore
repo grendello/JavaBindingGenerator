@@ -38,4 +38,5 @@ Thumbs.db
 
 # dotCover
 *.dotCover
-api.xml
+api.xml.fixedup
+api.xml.hierarchy

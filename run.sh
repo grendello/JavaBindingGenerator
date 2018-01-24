@@ -1,2 +1,3 @@
 #!/bin/bash
-exec mono --debug tools/BindingGenerator/bin/Debug/generator2.exe -w --fixup=metadata --fixup=enummetadata -l=debug --dump-fixedup --dump-hierarchy api.xml
+rm -f run.log
+exec mono --debug tools/BindingGenerator/bin/Debug/generator2.exe -w --fixup=metadata --fixup=enummetadata -l=verbose --dump-fixedup --dump-hierarchy api.xml | tee -a run.log

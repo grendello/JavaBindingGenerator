@@ -48,7 +48,7 @@ namespace Java.Interop.Bindings
 		{
 			if (Level < LogLevel.Warning)
 				return;
-			
+
 			Write ($"Warning: {message}");
 		}
 
@@ -56,7 +56,7 @@ namespace Java.Interop.Bindings
 		{
 			if (Level < LogLevel.Info)
 				return;
-			
+
 			Write ($"Info: {message}");
 		}
 
@@ -64,7 +64,7 @@ namespace Java.Interop.Bindings
 		{
 			if (Level < LogLevel.Debug)
 				return;
-			
+
 			Write ($"Debug: {message}");
 		}
 
@@ -74,6 +74,14 @@ namespace Java.Interop.Bindings
 				return;
 
 			Write ($"Verbose: {message}");
+		}
+
+		public static void Excessive (string message)
+		{
+			if (Level < LogLevel.Excessive)
+				return;
+
+			Write ($"Excessive: {message}");
 		}
 
 		static void Write (string text)

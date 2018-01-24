@@ -46,6 +46,7 @@ namespace Java.Interop.Bindings.Syntax
 
 		public void Apply ()
 		{
+			Logger.Debug ($"Applying fixups from: {fixupsPath}");
 			foreach (XElement fixup in fixups.XPathSelectElements ("/metadata/*"))
 				Apply (doc, fixup);
 		}
@@ -56,34 +57,34 @@ namespace Java.Interop.Bindings.Syntax
 			switch (fixup.Name.LocalName) {
 				case "remove-node":
 					DoOp ((XElement node) => node.Remove (),
-						// BG8A00
-						() => Report.Warning (0, Report.WarningApiFixup + 0, null, fixup, $"<remove-node path=\"{path}\"/> matched no nodes."),
-					    // BG4A01
-						(Exception e) => Report.Error (Report.ErrorApiFixup + 1, e, fixup, $"Invalid XPath specification: {path}")
-					   );
+					      // BG8A00
+					      () => Report.Warning (0, Report.WarningApiFixup + 0, null, fixup, $"<remove-node path=\"{path}\"/> matched no nodes."),
+					      // BG4A01
+					      (Exception e) => Report.Error (Report.ErrorApiFixup + 1, e, fixup, $"Invalid XPath specification: {path}")
+					);
 					break;
 
 				case "add-node":
 					DoOp ((XElement node) => node.Add (fixup.Nodes ()),
-						// BG8A01
-						() => Report.Warning (0, Report.WarningApiFixup + 1, null, fixup, $"<add-node path=\"{path}\"/> matched no nodes."),
-						// BG4A02
-						(Exception e) => Report.Error (Report.ErrorApiFixup + 2, e, fixup, $"Invalid XPath specification: {path}")
-					   );
+					      // BG8A01
+					      () => Report.Warning (0, Report.WarningApiFixup + 1, null, fixup, $"<add-node path=\"{path}\"/> matched no nodes."),
+					      // BG4A02
+					      (Exception e) => Report.Error (Report.ErrorApiFixup + 2, e, fixup, $"Invalid XPath specification: {path}")
+					);
 					break;
 
 				case "change-node":
 					DoOp ((XElement node) => {
-						var newChild = new XElement (fixup.Value);
-						newChild.Add (node.Attributes ());
-						newChild.Add (node.Nodes ());
-						node.ReplaceWith (newChild);
-					},
+							var newChild = new XElement (fixup.Value);
+							newChild.Add (node.Attributes ());
+							newChild.Add (node.Nodes ());
+							node.ReplaceWith (newChild);
+						},
 						// BG8A03
 						() => Report.Warning (0, Report.WarningApiFixup + 3, null, fixup, $"<change-node-type path=\"{path}\"/> matched no nodes."),
 						// BG4A03
 						(Exception e) => Report.Error (Report.ErrorApiFixup + 3, e, fixup, $"Invalid XPath specification: {path}")
-					   );
+					);
 					break;
 
 				case "attr":
@@ -93,11 +94,11 @@ namespace Java.Interop.Bindings.Syntax
 						Report.Error (Report.ErrorApiFixup + 7, null, fixup, $"Target attribute name is not specified for path: {path}");
 
 					DoOp ((XElement node) => node.SetAttributeValue (attr_name, fixup.Value),
-						// BG8A04
-						() => Report.Warning (0, Report.WarningApiFixup + 4, null, fixup, $"<attr path=\"{path}\"/> matched no nodes."),
-						// BG4A04
-						(Exception e) => Report.Error (Report.ErrorApiFixup + 4, e, fixup, $"Invalid XPath specification: {path}")
-					   );
+					      // BG8A04
+					      () => Report.Warning (0, Report.WarningApiFixup + 4, null, fixup, $"<attr path=\"{path}\"/> matched no nodes."),
+					      // BG4A04
+					      (Exception e) => Report.Error (Report.ErrorApiFixup + 4, e, fixup, $"Invalid XPath specification: {path}")
+					);
 					break;
 
 				case "move-node":
@@ -123,11 +124,11 @@ namespace Java.Interop.Bindings.Syntax
 
 				case "remove-attr":
 					DoOp ((XElement node) => node.RemoveAttributes (),
-						// BG8A06
-						() => Report.Warning (0, Report.WarningApiFixup + 6, null, fixup, $"<remove-attr path=\"{path}\"/> matched no nodes."),
-						// BG4A06
-						(Exception e) => Report.Error (Report.ErrorApiFixup + 6, e, fixup, $"Invalid XPath specification: {path}")
-					   );
+					      // BG8A06
+					      () => Report.Warning (0, Report.WarningApiFixup + 6, null, fixup, $"<remove-attr path=\"{path}\"/> matched no nodes."),
+					      // BG4A06
+					      (Exception e) => Report.Error (Report.ErrorApiFixup + 6, e, fixup, $"Invalid XPath specification: {path}")
+					);
 					break;
 
 				default:
@@ -137,12 +138,19 @@ namespace Java.Interop.Bindings.Syntax
 
 			void DoOp (Action <XElement> operation, Action warning = null, Action<Exception> exception = null)
 			{
+				// Serialization is expensive
+				if (Logger.Level >= LogLevel.Excessive)
+					Logger.Excessive ($"  Fixup source: {fixup.ToString ()}");
+
 				try {
-					IEnumerable<XElement> nodes = doc.XPathSelectElements(path);
+					IEnumerable<XElement> nodes = doc.XPathSelectElements (path);
 					if (nodes.Any ()) {
 						foreach (XElement node in nodes) {
 							if (node == null) // Unlikely, but won't hurt
-								operation (node);
+								continue;
+							if (Logger.Level >= LogLevel.Excessive)
+								Logger.Excessive ($"   Applying to: {node.ToString ()}");
+							operation (node);
 						}
 					} else 
 						warning?.Invoke ();

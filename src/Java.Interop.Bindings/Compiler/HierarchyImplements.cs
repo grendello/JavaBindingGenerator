@@ -25,12 +25,33 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyImplements : HierarchyElement
 	{
+		ApiImplements apiImplements;
+
+		protected ApiImplements ApiImplements => apiImplements;
+		public string JniType { get; set; }
+
 		public HierarchyImplements (HierarchyBase parent) : base (parent)
 		{
+		}
+
+		public override void Init (ApiElement apiElement)
+		{
+			base.Init (apiElement);
+
+			apiImplements = EnsureApiElementType<ApiImplements> (apiElement);
+			JniType = apiImplements.JniType;
+		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			string managedName = GetManagedName (); // Name is a full type name in this case
+			return (managedName, managedName);
 		}
 	}
 }

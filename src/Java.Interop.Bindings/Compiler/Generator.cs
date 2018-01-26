@@ -107,7 +107,7 @@ namespace Java.Interop.Bindings.Compiler
 			}
 		}
 
-		protected virtual void GenerateNamespaceMember (HierarchyElement element, StreamWriter writer, string outputFileName)
+		protected virtual void GenerateNamespaceMember (HierarchyElement element, TextWriter writer, string outputFileName)
 		{
 			Logger.Debug ($"Generating {element.GetManagedName (true)} in namespace output file: {outputFileName}");
 			OutputNamespaceMember (element, writer, outputFileName);
@@ -117,7 +117,7 @@ namespace Java.Interop.Bindings.Compiler
 		{
 			FilesystemPath path = Context.OutputPathProvider.GetPathFor (outputDirectory, element);
 			if (String.IsNullOrEmpty (path?.FullPath)) {
-				Logger.Warning ($"Unable to generate output for element {element.GetManagedName (true)} since no full path was given");
+				Logger.Warning ($"Unable to generate output for element {element.GetType ().FullName} ({element.GetManagedName (true) ?? element.FullName}) since no full path was given (at {element.GetLocation ()})");
 				return;
 			}
 
@@ -136,15 +136,15 @@ namespace Java.Interop.Bindings.Compiler
 			}
 		}
 
-		protected virtual void OutputNamespaceMember (HierarchyElement element, StreamWriter writer, string fileName)
+		protected virtual void OutputNamespaceMember (HierarchyElement element, TextWriter writer, string fileName)
 		{
 		}
 
-		protected virtual void WriteFileHeader (HierarchyNamespace ns, StreamWriter writer)
+		protected virtual void WriteFileHeader (HierarchyNamespace ns, TextWriter writer)
 		{
 		}
 
-		protected virtual void WriteFileFooter (HierarchyNamespace ns, StreamWriter writer)
+		protected virtual void WriteFileFooter (HierarchyNamespace ns, TextWriter writer)
 		{
 		}
 

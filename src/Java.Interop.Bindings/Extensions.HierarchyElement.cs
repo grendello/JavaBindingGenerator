@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Java.Interop.Bindings.Compiler;
 
@@ -67,6 +68,23 @@ namespace Java.Interop.Bindings
 			}
 
 			return String.Join (".", mangled);
+		}
+
+		public static string GetLocation (this HierarchyElement element)
+		{
+			if (element == null)
+				return String.Empty;
+
+			var sb = new StringBuilder (element.DocumentPath);
+			if (element.SourceLine >= 0) {
+				sb.Append (':');
+				if (element.SourceColumn >= 0)
+					sb.Append ($"[{element.SourceLine}:{element.SourceColumn}]");
+				else
+					sb.Append (element.SourceLine);
+			}
+
+			return sb.ToString ();
 		}
 	}
 }

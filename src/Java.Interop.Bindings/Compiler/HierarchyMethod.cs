@@ -25,11 +25,59 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyMethod : HierarchyTypeMember
 	{
+		ApiMethod apiMethod;
+
+		protected ApiMethod ApiMethod => apiMethod;
+
+		public bool Abstract { get; set; }
+		public string ArgsType { get; set; }
+		public string EnumReturn { get; set; }
+		public string EventName { get; set; }
+		public bool GenerateAsyncWrapper { get; set; }
+		public bool GenerateDispatchingSetter { get; set; }
+		public string ManagedReturn { get; set; }
+		public bool Native { get; set; }
+		public string PropertyName { get; set; }
+		public string Return { get; set; }
+		public string JniReturn { get; set; }
+		public bool Synchronized { get; set; }
+		public bool IsBridge { get; set; }
+		public bool IsSynthetic { get; set; }
+
 		public HierarchyMethod (HierarchyObject parent) : base (parent)
 		{ }
+
+		public override void Init (ApiElement apiElement)
+		{
+			base.Init (apiElement);
+
+			apiMethod = EnsureApiElementType<ApiMethod> (apiElement);
+			Abstract = apiMethod.Abstract;
+			ArgsType = apiMethod.ArgsType;
+			EnumReturn = apiMethod.EnumReturn;
+			EventName = apiMethod.EventName;
+			GenerateAsyncWrapper = apiMethod.GenerateAsyncWrapper;
+			GenerateDispatchingSetter = apiMethod.GenerateDispatchingSetter;
+			ManagedReturn = apiMethod.ManagedReturn;
+			Native = apiMethod.Native;
+			PropertyName = apiMethod.PropertyName;
+			Return = apiMethod.Return;
+			JniReturn = apiMethod.JniReturn;
+			Synchronized = apiMethod.Synchronized;
+			IsBridge = apiMethod.IsBridge;
+			IsSynthetic = apiMethod.IsSynthetic;
+		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			string managedName = GetManagedName ();
+			return (managedName, managedName);
+		}
 	}
 }

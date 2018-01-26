@@ -32,6 +32,7 @@ namespace Java.Interop.Bindings.Syntax
 	public class ApiException : ApiElement
 	{
 		public string Type { get; set; }
+		public string TypeGenericAware { get; set; }
 
 		public ApiException (string documentPath) : base (documentPath)
 		{ }
@@ -41,6 +42,7 @@ namespace Java.Interop.Bindings.Syntax
 			Dictionary<string, Action<string, XAttribute>> ret = EnsureKnownAttributes (base.GetKnownAttributes ());
 
 			ret ["type"] = (string value, XAttribute attr) => Type = value?.Trim ();
+			ret ["type-generic-aware"] = (string value, XAttribute attr) => TypeGenericAware = value?.Trim ();
 
 			return ret;
 		}

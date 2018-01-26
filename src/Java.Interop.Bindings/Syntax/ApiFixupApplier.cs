@@ -33,15 +33,40 @@ namespace Java.Interop.Bindings.Syntax
 {
 	public class ApiFixupApplier
 	{
+		const int DefaultApiLevel = 1;
+
 		readonly XDocument doc;
 		readonly XDocument fixups;
 		readonly string fixupsPath;
+		readonly int docApiLevel;
+
+		protected XDocument Document => doc;
+		protected XDocument Fixups => doc;
+		protected string FixupsPath => fixupsPath;
+		protected int DocApiLevel => docApiLevel;
 
 		public ApiFixupApplier (XDocument theDoc, XDocument theFixups, string fixupsFilePath)
 		{
 			doc = theDoc ?? throw new ArgumentNullException (nameof (theDoc));
 			fixups = theFixups ?? throw new ArgumentNullException (nameof (theFixups));
 			fixupsPath = String.IsNullOrEmpty (fixupsFilePath) ? "*memory document*" : fixupsFilePath;
+			docApiLevel = DefaultApiLevel;
+
+			XAttribute platform = doc.Root.Attributes ("platform").LastOrDefault ();
+			if (platform == null) {
+				Logger.Warning ("API description document does not specify its platform. Will default to {docApiLevel}");
+				return;
+			}
+
+			if (!Int32.TryParse (platform.Value, out docApiLevel)) {
+				Logger.Warning ($"Unable to parse platform level from the API description document as integer: {platform.Value}. Will default to {docApiLevel}");
+				return;
+			}
+
+			if (docApiLevel <= 0) {
+				Logger.Warning ($"Invalid platform level {docApiLevel}. Will default to {DefaultApiLevel}");
+				docApiLevel = DefaultApiLevel;
+			}
 		}
 
 		public void Apply ()
@@ -51,8 +76,28 @@ namespace Java.Interop.Bindings.Syntax
 				Apply (doc, fixup);
 		}
 
+		protected virtual bool ShouldSkip (XElement fixup)
+		{
+			if (fixup == null)
+				return true;
+
+			string since = fixup.XGetLastAttribute ("api-since");
+			string until = fixup.XGetLastAttribute ("api-until");
+			int level;
+
+			if (!String.IsNullOrEmpty (since) && Int32.TryParse (since, out level) && level > docApiLevel)
+				return true;
+			if (!String.IsNullOrEmpty (until) && Int32.TryParse (until, out level) && level < docApiLevel)
+				return true;
+
+			return false;
+		}
+
 		protected virtual void Apply (XDocument doc, XElement fixup)
 		{
+			if (ShouldSkip (fixup))
+				return;
+
 			string path = fixup.XGetAttribute ("path");
 			switch (fixup.Name.LocalName) {
 				case "remove-node":
@@ -104,17 +149,31 @@ namespace Java.Interop.Bindings.Syntax
 				case "move-node":
 					try {
 						string parent = fixup.Value;
+						List<XElement> nodesToMove = doc.XPathSelectElements (path).ToList ();
+						if (nodesToMove.Count == 0) {
+							// BG8A08
+							Report.Warning (0, Report.WarningApiFixup + 8, null, fixup, $"<move-node path=\"{path}\"/> matched no nodes.");
+							break;
+						}
+
 						IEnumerable<XElement> parents = doc.XPathSelectElements (parent);
 						if (parents.Any ()) {
+							foreach (XElement node in nodesToMove) {
+								Logger.Verbose ($"Removed {node.ToShortString (true)} from {node.Parent?.ToShortString (true)}");
+								node.Remove ();
+							}
+
 							foreach (XElement parent_node in parents) {
-								IEnumerable<XElement> nodes = parent_node.XPathSelectElements (path);
-								foreach (XElement node in nodes)
-									node.Remove ();
-								parent_node.Add (nodes);
+								foreach (XElement node in nodesToMove) {
+									parent_node.Add (node);
+									Logger.Verbose ($"Added {node.ToShortString (true)} to {parent_node.ToShortString (true)}");
+									if (Logger.Level > LogLevel.Excessive)
+										Logger.Excessive ($"Parent node now: {parent_node.ToString ()}");
+								}
 							}
 						} else {
 							// BG8A05
-							Report.Warning (0, Report.WarningApiFixup + 5, null, fixup, $"<move-node path=\"{parent}\"/> matched no nodes.");
+							Report.Warning (0, Report.WarningApiFixup + 5, null, fixup, $"<move-node>{parent}</> matched no nodes.");
 						}
 					} catch (XPathException e) {
 						// BG4A05
@@ -148,8 +207,7 @@ namespace Java.Interop.Bindings.Syntax
 						foreach (XElement node in nodes) {
 							if (node == null) // Unlikely, but won't hurt
 								continue;
-							if (Logger.Level >= LogLevel.Excessive)
-								Logger.Excessive ($"   Applying to: {node.ToString ()}");
+							Logger.Excessive ($"   Applying to: {node.ToShortString (true)}");
 							operation (node);
 						}
 					} else 

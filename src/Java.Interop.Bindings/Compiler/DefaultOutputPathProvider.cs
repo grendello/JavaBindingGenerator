@@ -55,6 +55,10 @@ namespace Java.Interop.Bindings.Compiler
 					relativePath = GetFilePath (iface);
 					break;
 
+				case HierarchyEnum enm:
+					relativePath = GetFilePath (enm);
+					break;
+
 				default:
 					throw new InvalidOperationException ($"Unsupported hierarchy type '{element.GetType ()}'");
 			}

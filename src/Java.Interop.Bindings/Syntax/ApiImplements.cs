@@ -31,6 +31,8 @@ namespace Java.Interop.Bindings.Syntax
 {
 	public class ApiImplements : ApiElement
 	{
+		public string JniType { get; set; }
+
 		public ApiImplements (string documentPath) : base (documentPath)
 		{ }
 
@@ -38,7 +40,7 @@ namespace Java.Interop.Bindings.Syntax
 		{
 			Dictionary<string, Action<string, XAttribute>> ret = EnsureKnownAttributes (base.GetKnownAttributes ());
 
-			ret ["name-generic-aware"] = (string value, XAttribute attr) => NameGenericAware = value;
+			ret ["jni-type"] = (string value, XAttribute attr) => JniType = value?.Trim ();
 
 			return ret;
 		}

@@ -33,6 +33,7 @@ namespace Java.Interop.Bindings.Syntax
 	{
 		public string Type { get; set; }
 		public string EnumType { get; set; }
+		public string JniType { get; set; }
 
 		public ApiMethodParameter (string documentPath) : base (documentPath)
 		{ }
@@ -43,6 +44,7 @@ namespace Java.Interop.Bindings.Syntax
 
 			ret ["type"] = (string value, XAttribute attr) => Type = value?.Trim ();
 			ret ["enumType"] = (string value, XAttribute attr) => EnumType = value?.Trim ();
+			ret ["jni-type"] = (string value, XAttribute attr) => JniType = value?.Trim ();
 
 			return ret;
 		}

@@ -30,7 +30,7 @@ using Java.Interop.Bindings.Syntax;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public abstract class HierarchyElement : HierarchyBase
+	public abstract class HierarchyElement : HierarchyBase//, IEquatable <HierarchyElement>
 	{
 		List<HierarchyElement> members;
 		List<HierarchyCustomAttribute> customAttributes;
@@ -43,14 +43,18 @@ namespace Java.Interop.Bindings.Compiler
 		public string ManagedName { get; internal set; }
 		public string FullManagedName { get; internal set; }
 		public IList<HierarchyElement> Members => members;
+		public bool HasMembers => members != null && members.Count > 0;
 		public string Name { get; internal set; }
 		public string NameGenericAware { get; internal set; }
-		public HierarchyBase Parent { get; }
+		public string JniSignature { get; internal set; }
+		public HierarchyBase Parent { get; private set; }
 		public HierarchyElement ParentElement => Parent as HierarchyElement;
 		public IList<HierarchyCustomAttribute> CustomAttributes => customAttributes;
 		public IList<string> Comments => comments;
 
-		public string DocumentPath { get; set; }
+		public string DocumentPath { get; private set; }
+		public int SourceLine { get; private set; } = -1;
+		public int SourceColumn { get; private set; } = -1;
 		public string DeprecatedMessage { get; set; }
 		public bool IsDeprecated { get; set; }
 		public string DeprecatedSinceAPI { get; set; }
@@ -71,24 +75,110 @@ namespace Java.Interop.Bindings.Compiler
 			if (apiElement == null)
 				throw new ArgumentNullException (nameof (apiElement));
 
+			this.apiElement = apiElement;
+
 			IsBoundAPI = true;
 
 			Name = apiElement.Name;
-			FullName = Name;
+			FullName = GenerateFullJavaName ();
 			ManagedName = apiElement.ManagedName;
-			FullManagedName = ManagedName;
+			FullManagedName = null;
+			JniSignature = apiElement.JniSignature;
 
-			this.apiElement = apiElement;
 			DocumentPath = apiElement.DocumentPath;
 			DeprecatedMessage = apiElement.DeprecatedMessage;
 			IsDeprecated = apiElement.IsDeprecated;
 			DeprecatedSinceAPI = apiElement.DeprecatedSinceAPI;
 			AvailableSinceAPI = apiElement.AvailableSinceAPI;
 			AvailableUntilAPI = apiElement.AvailableUntilAPI;
+			SourceLine = apiElement.SourceLine;
+			SourceColumn = apiElement.SourceColumn;
 		}
 
 		public virtual void Init ()
 		{}
+
+		internal void SetManagedNames ()
+		{
+			(string ManagedName, string FullManagedName) names = GenerateManagedNames ();
+			FullManagedName = names.FullManagedName ?? String.Empty;
+			ManagedName = names.ManagedName;
+		}
+
+		protected string GetManagedName ()
+		{
+			if (String.IsNullOrEmpty (ManagedName))
+				return JavaNameToManagedName (Name);
+			return EnsureValidIdentifier (ManagedName);
+		}
+
+		protected void EnsureName ()
+		{
+			if (String.IsNullOrEmpty (Name))
+				throw new InvalidOperationException ("Name must not be null or empty");
+		}
+
+		protected virtual string GenerateFullJavaName ()
+		{
+			string name = Name;
+			EnsureName ();
+			return BuildFullName (Name, (HierarchyElement parent) => parent.Name);
+		}
+
+		protected virtual string BuildFullName (string firstSegment, Func<HierarchyElement, string> getSegment)
+		{
+			if (String.IsNullOrEmpty (firstSegment))
+				throw new ArgumentException ("must not be null or empty", nameof (firstSegment));
+			if (getSegment == null)
+				throw new ArgumentNullException (nameof (getSegment));
+
+			var segments = new List<string> {};
+			if (SplitName (firstSegment, out List<string> split))
+				segments.AddRange (split);
+			else
+				segments.Add (firstSegment);
+
+			HierarchyBase parent = Parent;
+			while (parent != null) {
+				var element = parent as HierarchyElement;
+				if (element == null)
+					break;
+
+				string segment = getSegment (element);
+				if (String.IsNullOrEmpty (segment))
+					throw new InvalidOperationException ("Element name segment must not be null or empty");
+				if (SplitName (segment, out split))
+					segments.AddRange (split);
+				else
+					segments.Add (segment);
+				parent = element.Parent;
+			}
+
+			// string dbg = String.Join (" → ", segments);
+			// Logger.Debug ($"Full name segments for {Name} ({GetType ().FullName}): {dbg}");
+			return MakeFullName (segments);
+		}
+
+		bool SplitName (string name, out List<string> split)
+		{
+			split = null;
+			if (name.IndexOf ('.') < 0)
+				return false;
+			split = new List <string> ();
+			foreach (string n in name.Split ('.'))
+				split.Insert (0, n);
+			return true;
+		}
+
+		string MakeFullName (List<string> segments)
+		{
+			if (segments == null)
+				return String.Empty;
+			segments.Reverse ();
+			return String.Join (".", segments);
+		}
+
+		protected abstract (string ManagedName, string FullManagedName) GenerateManagedNames ();
 
 		public void AddComment (string commentLine)
 		{
@@ -114,6 +204,7 @@ namespace Java.Interop.Bindings.Compiler
 				throw new ArgumentNullException (nameof (member));
 
 			Helpers.AddToList (member, ref members);
+			member.Parent = this;
 			MemberAdded (member);
 		}
 
@@ -130,10 +221,25 @@ namespace Java.Interop.Bindings.Compiler
 			members.Remove (member);
 		}
 
-		protected void AssertType <T> (T element) where T: ApiElement
-		{
-			if (element == null)
-				throw new ArgumentException ($"expected argument of type '{typeof (T).FullName}'", nameof (element));
-		}
+		// public bool Equals (HierarchyElement other)
+		// {
+		// 	if (other == null)
+		// 		return false;
+
+		// 	throw new NotImplementedException();
+		// }
+
+		// public override bool Equals (object other)
+		// {
+		// 	if (other == null)
+		// 		return false;
+
+		// 	return Equals (other as HierarchyElement);
+		// }
+
+		// public override int GetHashCode ()
+		// {
+		// 	return base.GetHashCode ();
+		// }
 	}
 }

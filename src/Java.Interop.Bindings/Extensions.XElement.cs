@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Java.Interop.Bindings
@@ -36,15 +38,49 @@ namespace Java.Interop.Bindings
 				return null;
 
 			XAttribute attr = element.Attribute (name);
-			return attr?.Value.Trim ();
+			return attr?.Value?.Trim ();
+		}
+
+		public static string XGetLastAttribute (this XElement element, string name)
+		{
+			if (element == null)
+				return null;
+
+			XAttribute attr = element.Attributes (name).LastOrDefault ();
+			return attr?.Value?.Trim ();
 		}
 
 		public static bool Is (this XElement element, string name)
 		{
 			if (element == null || String.IsNullOrEmpty (name))
 				return false;
-			
+
 			return String.Compare (name, element.Name.LocalName, StringComparison.Ordinal) == 0;
+		}
+
+		public static string ToShortString (this XElement element, bool includeLocation = false)
+		{
+			if (element == null)
+				return String.Empty;
+
+			var sb = new StringBuilder ();
+			sb.Append ($"<{element.Name}");
+			if (element.HasAttributes) {
+				foreach (XAttribute attr in element.Attributes ()) {
+					sb.Append ($" {attr.Name}=\"{attr.Value}\"");
+				}
+			}
+			sb.Append (" />");
+
+			if (includeLocation) {
+				if (!String.IsNullOrEmpty (element.Document.BaseUri))
+					sb.Append ($" {element.Document.BaseUri}");
+				string lineInfo = element.GetLineInfo ();
+				if (!String.IsNullOrEmpty (lineInfo))
+					sb.Append ($":[{lineInfo}]");
+			}
+
+			return sb.ToString ();
 		}
 	}
 }

@@ -32,5 +32,21 @@ namespace Java.Interop.Bindings.Compiler
 		public HierarchyConstructor (HierarchyObject parent) : base (parent)
 		{
 		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			var parent = Parent as HierarchyClass;
+			if (parent == null)
+				throw new InvalidOperationException ("Constructor parent must be a class");
+			string parentManagedName = parent.ManagedName;
+			string managedName = GetManagedName ();
+
+			if (String.Compare (managedName, parentManagedName, StringComparison.Ordinal) != 0) {
+				Logger.Debug ($"Changing constructor name to match parent class from '{managedName}' to '{parentManagedName}'");
+				managedName = parentManagedName;
+			}
+
+			return (managedName, managedName);
+		}
 	}
 }

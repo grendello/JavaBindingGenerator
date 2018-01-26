@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected HierarchyAttributeNamespaceMappingGenerator (HierarchyAttributeNamespaceMapping attribute) : base (attribute)
 		{}
 
-		protected override void OutputParameters (Stream output)
+		protected override void OutputParameters (TextWriter output)
 		{
 			bool haveJava = !String.IsNullOrEmpty (Attribute.Java);
 			bool haveManaged = !String.IsNullOrEmpty (Attribute.Managed);

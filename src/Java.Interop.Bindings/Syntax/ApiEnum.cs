@@ -26,7 +26,7 @@
 
 namespace Java.Interop.Bindings.Syntax
 {
-	public class ApiEnum : ApiElement
+	public class ApiEnum : ApiType
 	{
 		public ApiEnum (string documentPath) : base (documentPath)
 		{ }

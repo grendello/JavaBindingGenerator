@@ -25,12 +25,35 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyException : HierarchyElement
 	{
+		ApiException apiException;
+
+		protected ApiException ApiException => apiException;
+		public string Type { get; set; }
+		public string TypeGenericAware { get; set; }
+
 		public HierarchyException (HierarchyBase parent) : base (parent)
 		{
+		}
+
+		public override void Init (ApiElement apiElement)
+		{
+			base.Init (apiElement);
+
+			apiException = EnsureApiElementType<ApiException> (apiElement);
+			Type = apiException.Type;
+			TypeGenericAware = apiException.TypeGenericAware;
+		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			string managedName = JavaNameToManagedName (Type);
+			return (managedName, managedName);
 		}
 	}
 }

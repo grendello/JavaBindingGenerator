@@ -25,12 +25,32 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyTypeParameterGenericConstraint : HierarchyElement
 	{
+		ApiTypeParameterGenericConstraint apiTypeParameterGenericConstraint;
+
+		protected ApiTypeParameterGenericConstraint ApiTypeParameterGenericConstraint => apiTypeParameterGenericConstraint;
+
+		public string Type { get; set; }
+
 		public HierarchyTypeParameterGenericConstraint (HierarchyBase parent) : base (parent)
+		{}
+
+		public override void Init (ApiElement apiElement)
 		{
+			base.Init (apiElement);
+
+			apiTypeParameterGenericConstraint = EnsureApiElementType<ApiTypeParameterGenericConstraint> (apiElement);
+		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			string managedName = JavaNameToManagedName (Type);
+			return (managedName, managedName);
 		}
 	}
 }

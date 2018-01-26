@@ -44,14 +44,12 @@ namespace Java.Interop.Bindings.Compiler
 		public const string DefaultInterfaceBaseType = DefaultInterfaceBaseTypeNamespace + ".IJavaObject";
 		public const string DefaultClassBaseType = DefaultClassBaseTypeNamespace + ".Object";
 
-		Dictionary<string, HierarchyObject> typeIndex;
 		List<HierarchyNamespace> namespaces;
 		List<HierarchyEnum> enums;
 		Dictionary<string, List<HierarchyElement>> typeNameDependants;
 
 		public IList<HierarchyNamespace> Namespaces => namespaces;
-		public IList<HierarchyEnum> Enums => enums;
-		protected Dictionary<string, HierarchyObject> TypeIndex => typeIndex;
+		protected HierarchyIndex TypeIndex { get; } = new HierarchyIndex ();
 
 		public void Build (IList<ApiElement> rawElements)
 		{ 
@@ -92,7 +90,7 @@ namespace Java.Interop.Bindings.Compiler
 			// interfaces that don't derive from other interfaces
 			HierarchyInterface iJavaLangObject = androidRuntime.Members?.OfType <HierarchyInterface> ().Where (iface => String.Compare (DefaultInterfaceBaseType, iface?.FullName, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault ();
 			if (iJavaLangObject == null) {
-				Logger.Verbose ("Synthetizing Android.Runtime.IJavaObject interface (not found after parsing API description)");
+				Logger.Verbose ("Synthesizing Android.Runtime.IJavaObject interface (not found after parsing API description)");
 				iJavaLangObject = CreateHierarchyElementInternal <HierarchyInterface> (androidRuntime);
 				iJavaLangObject.Init ();
 				iJavaLangObject.FullName = DefaultInterfaceBaseType;
@@ -100,26 +98,47 @@ namespace Java.Interop.Bindings.Compiler
 				iJavaLangObject.IgnoreForCodeGeneration = true;
 				iJavaLangObject.InvokerNotNeeded = true;
 				iJavaLangObject.UseGlobal = true;
-				AddTypeToIndex (iJavaLangObject);
+				TypeIndex.Add (iJavaLangObject);
 			}
 
-			// Pass 2: nest classes, enums and interfaces
-			NestElements ();
+			// Pass 2: nest classes, interfaces
+			NestNamespaces ();
 
-			// Pass 3: generate and inject synthetic elements
+			// Pass 3: generate managed names
+			Helpers.ForEachNotNull (namespaces, (HierarchyNamespace ns) => GenerateManagedNames (ns));
+
+			// TODO: fix generation of full managed names for enums
+			Helpers.ForEachNotNull (enums, (HierarchyEnum enm) => GenerateManagedNames (enm));
+
+			// Pass 4: nest enums (they need managed names)
+			NestEnums ();
+
+			// Pass 5: generate and inject synthetic elements
 			SynthesizeElements ();
 
-			// Pass 4: resolve base types since we have everything in place now
+			// Pass 6: resolve base types since we have everything in place now
 			ResolveBaseTypes ();
 
-			// Pass 5: generate managed names and rename all the related nested types accordingly
+			// Pass 7: sort class members
+		}
 
-			// Pass 6: sort class members
+		protected void GenerateManagedNames (HierarchyElement root)
+		{
+			if (root == null)
+				return;
+
+			root.SetManagedNames ();
+			if (root is HierarchyObject || root is HierarchyNamespace)
+			 	TypeIndex.AddManaged (root);
+			if (!root.HasMembers)
+				return;
+
+			Helpers.ForEachNotNull(root.Members, (HierarchyElement element) => GenerateManagedNames (element));
 		}
 
 		protected void ResolveBaseTypes ()
 		{
-			if (namespaces == null || namespaces.Count == 0 || typeIndex == null)
+			if (namespaces == null || namespaces.Count == 0)
 				return;
 
 			foreach (HierarchyNamespace ns in namespaces) {
@@ -127,7 +146,7 @@ namespace Java.Interop.Bindings.Compiler
 					continue;
 
 				foreach (HierarchyObject type in ns.Members.OfType<HierarchyObject> ().Where (o => o != null)) {
-					type.ResolveBaseTypes (typeIndex);
+					type.ResolveBaseTypes (TypeIndex);
 				}
 			}
 		}
@@ -135,26 +154,32 @@ namespace Java.Interop.Bindings.Compiler
 		protected virtual void SynthesizeElements ()
 		{}
 
-		protected void NestElements ()
+		void NestElements <TElement, TParent> (IList<TElement> elements, Dictionary <HierarchyElement, HierarchyElement> toReparent)
+			where TElement: HierarchyElement
+			where TParent: HierarchyElement
 		{
-			if (namespaces == null || namespaces.Count == 0)
+			if (elements == null)
 				return;
 
-			var toReparent = new Dictionary <HierarchyElement, HierarchyElement> ();
-			foreach (HierarchyNamespace ns in namespaces) {
-				if (ns == null || ns.Members == null || ns.Members.Count == 0)
+			foreach (HierarchyElement element in elements) {
+				TParent newParent = SelectNewParent <TParent> (element);
+				if (newParent == null)
 					continue;
 
-				foreach (HierarchyElement element in ns.Members) {
-					HierarchyClass newParent = SelectNewParent (element);
-					if (newParent == null)
-						continue;
+				if (toReparent.ContainsKey (element))
+					Logger.Warning ($"Element {element.Name} ({element.GetType ()} was already re-parented");
 
-					if (toReparent.ContainsKey (element))
-						Logger.Warning ($"Element {element.Name} ({element.GetType ()} was already re-parented");
-					toReparent [element] = newParent;
-				}
+				toReparent [element] = newParent;
 			}
+		}
+
+		protected void NestElements (Action<Dictionary <HierarchyElement, HierarchyElement>> looper)
+		{
+			if (looper == null)
+				throw new ArgumentNullException (nameof (looper));
+
+			var toReparent = new Dictionary <HierarchyElement, HierarchyElement> ();
+			looper (toReparent);
 
 			if (toReparent.Count == 0)
 				return;
@@ -168,12 +193,31 @@ namespace Java.Interop.Bindings.Compiler
 			}
 		}
 
-		protected virtual HierarchyClass SelectNewParent (HierarchyElement element)
+		protected void NestNamespaces ()
 		{
-			if (element == null || String.IsNullOrEmpty (element.FullName))
+			NestElements (
+				toReparent => {
+					foreach (HierarchyNamespace ns in namespaces) {
+						NestElements <HierarchyElement, HierarchyClass> (ns?.Members, toReparent);
+					}
+				}
+			);
+		}
+
+		protected void NestEnums ()
+		{
+			NestElements (toReparent => NestElements <HierarchyEnum, HierarchyNamespace> (enums, toReparent));
+		}
+
+		protected virtual T SelectNewParent <T> (HierarchyElement element) where T: HierarchyElement
+		{
+			if (element == null)
 				return null;
 
-			if (typeIndex == null || typeIndex.Count == 0) {
+			if (String.IsNullOrEmpty (element.FullName))
+				throw new InvalidOperationException ("Each element must have a full name");
+
+			if (TypeIndex.Count == 0) {
 				Logger.Warning ($"Unable to select new parent for element {element.Name}, type index does not exist");
 				return null;
 			}
@@ -185,15 +229,20 @@ namespace Java.Interop.Bindings.Compiler
 			if (String.IsNullOrEmpty (nsOrTypeName))
 				return null;
 
-			HierarchyObject maybeParent;
-			if (!typeIndex.TryGetValue (nsOrTypeName, out maybeParent))
-				return null;
+			try {
+				HierarchyElement maybeParent = TypeIndex.Lookup (nsOrTypeName);
+				if (maybeParent == null)
+					return null;
 
-			var klass = maybeParent as HierarchyClass;
-			if (klass == null)
-				return null;
+				var ret = maybeParent as T;
+				if (ret == null)
+					return null;
 
-			return klass;
+				return ret;
+			} catch {
+				Logger.Fatal ($"Error selecting new parent for element '{element.FullName}' ({element.GetLocation ()})");
+				throw;
+			}
 		}
 
 		public void Dump (string outputFile)
@@ -204,7 +253,7 @@ namespace Java.Interop.Bindings.Compiler
 			string indent = String.Empty;
 			using (var sw = new StreamWriter (outputFile, false, Encoding.UTF8)) {
 				foreach (HierarchyNamespace ns in namespaces) {
-					sw.WriteLine ($"Namespace: {ns.FullName}");
+					sw.WriteLine ($"Namespace: [native: {ns.Name} ({ns.FullName})] [managed: {ns.ManagedName} ({ns.FullManagedName})]");
 					Dump (sw, indent + "\t", ns.Members);
 				}
 			}
@@ -216,7 +265,7 @@ namespace Java.Interop.Bindings.Compiler
 				return;
 
 			foreach (HierarchyElement element in members) {
-				sw.WriteLine ($"{indent}{TypeToName (element)}: {element.FullName} [managed name: {element.ManagedName}; full managed name: {element.FullManagedName}]");
+				sw.WriteLine ($"{indent}{TypeToName (element)}: [native: {element.Name} ({element.FullName})] [managed: {element.ManagedName} ({element.FullManagedName})]");
 				Dump (sw, indent + "\t", element.Members);
 			}
 		}
@@ -280,6 +329,7 @@ namespace Java.Interop.Bindings.Compiler
 			});
 
 			Helpers.AddToList (ns, ref namespaces);
+			TypeIndex.Add (ns);
 		}
 
 		void AddLocationComment (ApiElement element, HierarchyElement hierarchyElement)
@@ -331,7 +381,7 @@ namespace Java.Interop.Bindings.Compiler
 			});
 
 			parent.AddMember (hierarchyClass);
-			AddTypeToIndex (hierarchyClass);
+			TypeIndex.Add (hierarchyClass);
 		}
 
 		protected virtual void Process (HierarchyObject parent, ApiTypeParameter typeParameter)
@@ -473,7 +523,7 @@ namespace Java.Interop.Bindings.Compiler
 			});
 
 			parent.AddMember (hierarchyInterface);
-			AddTypeToIndex (hierarchyInterface);
+			TypeIndex.Add (hierarchyInterface);
 		}
 
 		protected virtual void Process (ApiEnum apiEnum)
@@ -481,40 +531,7 @@ namespace Java.Interop.Bindings.Compiler
 			var enm = CreateHierarchyElementInternal <HierarchyEnum> (this);
 			enm.Init (apiEnum);
 			Helpers.AddToList (enm, ref enums);
-		}
-
-		protected void AddTypeToIndex (HierarchyObject type)
-		{
-			if (type == null)
-				throw new ArgumentNullException (nameof (type));
-
-			// TODO: add aliasing for types that have NameGenericAware (AppImplements) and their generic
-			// name is different than the regular one - map the generic one to the type desribed by the
-			// non-generic name
-			AddTypeToIndex (type.FullName, type);
-			AddTypeToIndex (type.FullManagedName, type);
-			AddTypeToIndex (type.NameGenericAware, type);
-		}
-
-		void AddTypeToIndex (string typeName, HierarchyObject type)
-		{
-			if (String.IsNullOrEmpty (typeName))
-				return;
-
-			if (String.Compare ("java.lang.Comparable", typeName, StringComparison.OrdinalIgnoreCase) == 0) {
-				Logger.Debug ($"java.lang.Comparable being added: {type} ({type.FullName})");
-			}
-
-			if (typeIndex == null)
-				typeIndex = new Dictionary<string, HierarchyObject> (StringComparer.Ordinal);
-
-			HierarchyObject t;
-			if (typeIndex.TryGetValue (typeName, out t) && t != null) {
-				if (t.GetType () != type.GetType ())
-					throw new InvalidOperationException ($"Conflicting type index entry. Type '{typeName} ({type.GetType ().FullName})' must not replace '{t.FullName} ({t.GetType ().FullName})' since they are of different types");
-			}
-
-			typeIndex [typeName] = type;
+			TypeIndex.Add (enm);
 		}
 
 		protected T CreateHierarchyElementInternal <T> (HierarchyBase parent) where T: HierarchyElement
@@ -536,8 +553,6 @@ namespace Java.Interop.Bindings.Compiler
 				ret = new HierarchyNamespace (parent as Hierarchy);
 			else if (type == typeof (HierarchyClass))
 				ret = new HierarchyClass (parent as HierarchyNamespace);
-			else if (type == typeof (HierarchyTypeMember))
-				ret = new HierarchyTypeMember (parent as HierarchyObject);
 			else if (type == typeof (HierarchyImplements))
 				ret = new HierarchyImplements (parent as HierarchyObject);
 			else if (type == typeof (HierarchyMethod))

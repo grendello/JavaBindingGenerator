@@ -74,12 +74,14 @@
     <Compile Include="Syntax\ApiEnum.cs" />
     <Compile Include="Compiler\GeneratorContext.cs" />
     <Compile Include="Compiler\Hierarchy.cs" />
+    <Compile Include="Compiler\HierarchyIndex.cs" />
     <Compile Include="Compiler\HierarchyClass.cs" />
     <Compile Include="Compiler\HierarchyInterface.cs" />
     <Compile Include="Compiler\HierarchyObject.cs" />
     <Compile Include="Compiler\HierarchyEnum.cs" />
     <Compile Include="Compiler\HierarchyTypeMember.cs" />
     <Compile Include="Compiler\HierarchyBase.cs" />
+    <Compile Include="Compiler\HierarchyExternalTypeReference.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Compiler\HierarchyTypeKind.cs" />
     <Compile Include="Compiler\HierarchyField.cs" />

@@ -127,7 +127,7 @@ namespace Java.Interop.Bindings.Syntax
 				IndentChars = "\t",
 				NamespaceHandling = NamespaceHandling.OmitDuplicates,
 				NewLineHandling = NewLineHandling.None,
-				NewLineOnAttributes = false,
+				NewLineOnAttributes = true,
 				WriteEndDocumentOnClose = true
 			};
 

@@ -41,7 +41,7 @@ namespace Java.Interop.Bindings.Compiler
 			Attribute = attribute ?? throw new ArgumentNullException (nameof (attribute));
 		}
 
-		public void Generate (Stream output)
+		public void Generate (TextWriter output)
 		{
 			if (output == null)
 				throw new ArgumentNullException (nameof (output));
@@ -52,12 +52,12 @@ namespace Java.Interop.Bindings.Compiler
 		}
 
 		// To be implemented by the specialized attribute generator
-		protected abstract void OutputParameters (Stream output);
+		protected abstract void OutputParameters (TextWriter output);
 
 		// To be implemented by the language generator
-		protected abstract void OutputStart (Stream output);
-		protected abstract void OutputParameter <TValue> (Stream output, TValue value);
-		protected abstract void OutputParameter <TValue> (Stream output, string name, TValue value);
-		protected abstract void OutputEnd (Stream output);
+		protected abstract void OutputStart (TextWriter output);
+		protected abstract void OutputParameter <TValue> (TextWriter output, TValue value);
+		protected abstract void OutputParameter <TValue> (TextWriter output, string name, TValue value);
+		protected abstract void OutputEnd (TextWriter output);
 	}
 }

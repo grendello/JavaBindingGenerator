@@ -44,29 +44,24 @@ namespace Java.Interop.Bindings.Compiler
 			base.Init ();
 
 			Name = MakeInvokerName (InvokedInterface.Name);
-			ManagedName = MakeInvokerName (InvokedInterface.ManagedName, InvokedInterface.Name);
-			FullName = MakeInvokerName (InvokedInterface.FullName, isFullName: true);
-			FullManagedName = MakeInvokerName (InvokedInterface.FullManagedName, InvokedInterface.FullName, true);
+			FullName = GenerateFullJavaName ();
+
+			Logger.Debug ($"Invoker init: name {Name} (for interface {InvokedInterface.Name})");
 		}
 
-		string MakeInvokerName (string interfaceName, string fallBack = null, bool isFullName = false)
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
 		{
-			string name;
-			if (String.IsNullOrEmpty (interfaceName)) {
-				if (String.IsNullOrEmpty (fallBack))
-					throw new InvalidOperationException ("Cannot generate interface invoker classw without a name");
-				name = fallBack;
-			} else
-				name = interfaceName;
+			(string ManagedName, string FullManagedName) names = base.GenerateManagedNames ();
 
-			string ns = String.Empty;
-			if (isFullName) {
-				ns = Helpers.GetTypeNamespace (name);
-				if (!String.IsNullOrEmpty (ns))
-					ns += ".";
-			}
+			return (MakeInvokerName (names.ManagedName), MakeInvokerName (names.FullManagedName));
+		}
 
-			return $"{ns}{name}Invoker";
+		string MakeInvokerName (string baseName)
+		{
+			if (String.IsNullOrEmpty (baseName))
+				return String.Empty;
+
+			return $"{baseName}Invoker";
 		}
 	}
 }

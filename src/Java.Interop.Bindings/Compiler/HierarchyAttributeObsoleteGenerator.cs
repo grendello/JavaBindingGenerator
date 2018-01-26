@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected HierarchyAttributeObsoleteGenerator (HierarchyAttributeObsolete attribute) : base (attribute)
 		{}
 
-		protected override void OutputParameters (Stream output)
+		protected override void OutputParameters (TextWriter output)
 		{
 			if (!Attribute.IsError && String.IsNullOrEmpty (Attribute.Message))
 				return;

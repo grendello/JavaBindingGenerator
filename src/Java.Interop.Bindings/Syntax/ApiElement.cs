@@ -190,6 +190,7 @@ namespace Java.Interop.Bindings.Syntax
 			ret ["name"] = (string value, XAttribute attr) => Name = value?.Trim ();
 			ret ["managedName"] = (string value, XAttribute attr) => ManagedName = value?.Trim ();
 			ret ["jni-signature"] = (string value, XAttribute attr) => JniSignature = value?.Trim ();
+			ret ["name-generic-aware"] = (string value, XAttribute attr) => NameGenericAware = value?.Trim ();
 
 			return ret;
 		}

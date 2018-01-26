@@ -24,25 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+
 using Java.Interop.Bindings.Syntax;
 
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyEnum : HierarchyObject
 	{
+		ApiEnum apiEnum;
+
+		protected ApiEnum ApiEnum => apiEnum;
+
 		public HierarchyEnum (HierarchyBase parent) : base (parent)
 		{
+			DoNotAddBaseTypes = true;
 		}
 
 		public override void Init (ApiElement apiElement)
 		{
 			base.Init (apiElement);
-			Init (apiElement as ApiEnum);
-		}
-
-		protected virtual void Init (ApiEnum enm)
-		{
-			AssertType (enm);
+			apiEnum = EnsureApiElementType<ApiEnum> (apiElement);
 		}
 	}
 }

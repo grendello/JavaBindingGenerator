@@ -314,7 +314,7 @@
   <attr path="/api/package[@name='java.nio.channels']/class[@name='Channels']/method[@name='newChannel' and @return='java.nio.channels.WritableByteChannel']" name="managedName">NewWritableChannel</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Dictionary']/method/parameter[@name='key']" name="type">K</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Dictionary']/method/parameter[@name='value']" name="type">V</attr>
-  <attr path="/api/package[@name='java.util']/class[@name='Dictionary']" name="name">Dictionary&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/class[@name='Dictionary']" name="name-generic-aware">Dictionary&lt;K, V&gt;</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/method/parameter[@name='key']" name="type">K</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/method/parameter[@name='value']" name="type">V</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/implements[@name='java.util.Map']" name="name-generic-aware">java.util.Map&lt;K, V&gt;</attr>

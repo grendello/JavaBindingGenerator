@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected HierarchyAttributeRegisterGenerator (HierarchyAttributeRegister attribute) : base (attribute)
 		{}
 
-		protected override void OutputParameters (Stream output)
+		protected override void OutputParameters (TextWriter output)
 		{
 			bool haveSignature = !String.IsNullOrEmpty (Attribute.Signature);
 			bool haveConnector = !String.IsNullOrEmpty (Attribute.Connector);

@@ -57,14 +57,14 @@ namespace Java.Interop.Bindings.Compiler
 			Obfuscated = apiClass.Obfuscated;
 		}
 
-		protected override void AddBaseTypes (Dictionary<string, HierarchyObject> typeIndex)
+		protected override void AddBaseTypes (HierarchyIndex typeIndex)
 		{
 			base.AddBaseTypes (typeIndex);
 
 			if (String.IsNullOrEmpty (Extends))
 				return;
 
-			AddBaseType(LookupType (typeIndex, Extends));
+			AddBaseType (Extends);
 		}
 	}
 }

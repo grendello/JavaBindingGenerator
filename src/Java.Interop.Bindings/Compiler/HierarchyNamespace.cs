@@ -24,26 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+
 using Java.Interop.Bindings.Syntax;
 
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyNamespace : HierarchyElement
 	{
+		ApiNameSpace apiNameSpace;
+
+		protected ApiNameSpace ApiNameSpace => apiNameSpace;
+		public string JniName { get; set; }
+
 		public HierarchyNamespace (Hierarchy parent) : base (parent)
 		{
+			PreserveDotsInJavaNameTranslation = true;
 		}
 
 		public override void Init (ApiElement apiElement)
 		{
 			base.Init (apiElement);
-			Init (apiElement as ApiNameSpace);
+			apiNameSpace = EnsureApiElementType<ApiNameSpace> (apiElement);
+			JniName = apiNameSpace.JniName;
 		}
 
-		protected virtual void Init (ApiNameSpace ns)
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
 		{
-			AssertType (ns);
+			string managedName = GetManagedName (); // Name is a full type name in this case
+			return (managedName, managedName);
 		}
 	}
 }

@@ -65,8 +65,11 @@ namespace Java.Interop.Bindings.Compiler.Xamarin
 			invoker.AddImplements (iface.FullName);
 
 			parent.AddMember (invoker);
-			AddTypeToIndex (invoker);
 			iface.Invoker = invoker;
+
+			// SynthesizeElements is ran after managed names are already generated, so we need to make sure
+			// our invoker has them generated as well here
+			invoker.SetManagedNames ();
 		}
 	}
 }

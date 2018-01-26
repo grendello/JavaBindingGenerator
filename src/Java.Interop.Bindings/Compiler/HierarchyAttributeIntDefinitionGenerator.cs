@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected HierarchyAttributeIntDefinitionGenerator (HierarchyAttributeIntDefinition attribute) : base (attribute)
 		{}
 
-		protected override void OutputParameters (Stream output)
+		protected override void OutputParameters (TextWriter output)
 		{
 			OutputParameter (output, Attribute.ConstantMember);
 			if (!String.IsNullOrEmpty (Attribute.JniField))

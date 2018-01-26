@@ -38,6 +38,7 @@ namespace Java.Interop.Bindings.Compiler
 		List<HierarchyObject> baseTypes;
 
 		protected ApiType ApiType => apiType;
+		protected bool DoNotAddBaseTypes { get; set; }
 
 		public bool Abstract { get; set; }
 		public bool Static { get; set; }
@@ -54,12 +55,7 @@ namespace Java.Interop.Bindings.Compiler
 		{
 			base.Init (apiElement);
 
-			apiType = ApiElement as ApiType;
-
-			(string FullName, string FullManagedName) names = MakeFullyQualifiedName ();
-			FullName = names.FullName;
-			FullManagedName = names.FullManagedName;
-
+			apiType = EnsureApiElementType<ApiType>(apiElement);
 			if (apiElement.ChildElements != null) {
 				foreach (ApiImplements ai in apiElement.ChildElements.OfType<ApiImplements> ().Where (o => o != null)) {
 					string name = ai.NameGenericAware?.Trim ();
@@ -68,9 +64,6 @@ namespace Java.Interop.Bindings.Compiler
 					AddImplements (name);
 				}
 			}
-
-			if (apiType == null)
-				return;
 
 			Abstract = apiType.Abstract;
 			Static = apiType.Static;
@@ -90,17 +83,18 @@ namespace Java.Interop.Bindings.Compiler
 			Helpers.AddToList (typeName, ref baseTypeNames);
 		}
 
-		public void ResolveBaseTypes (Dictionary<string, HierarchyObject> typeIndex)
+		public void ResolveBaseTypes (HierarchyIndex typeIndex)
 		{
-			if (baseTypes != null)
+			if (DoNotAddBaseTypes || baseTypes != null)
 				return;
 
 			if (typeIndex == null)
 				throw new ArgumentNullException (nameof (typeIndex));
 
 			if (baseTypeNames != null && baseTypeNames.Count > 0) {
+				string kindHint = HierarchyIndex.TypeToPrefix<HierarchyInterface> ();
 				foreach (string typeName in baseTypeNames) {
-					HierarchyObject o = LookupType (typeIndex, typeName);
+					HierarchyElement e = typeIndex.Lookup (typeName, kindHint, this);
 				}
 			}
 
@@ -110,28 +104,27 @@ namespace Java.Interop.Bindings.Compiler
 				AddDefaultBaseType (typeIndex);
 		}
 
-		protected virtual void AddBaseTypes (Dictionary<string, HierarchyObject> typeIndex)
-		{}
+		protected virtual void AddBaseTypes (HierarchyIndex typeIndex)
+		{
+			if (typeIndex == null)
+				throw new ArgumentNullException (nameof (typeIndex));
+		}
 
-		void AddDefaultBaseType (Dictionary<string, HierarchyObject> typeIndex)
+		void AddDefaultBaseType (HierarchyIndex typeIndex)
 		{
 			string typeName = null;
+			string kindHint = null;
 
 			if (this is HierarchyInterface) {
 				typeName = Hierarchy.DefaultInterfaceBaseType;
+				kindHint = HierarchyIndex.TypeToPrefix<HierarchyInterface> ();
 			} else if (this is HierarchyClass) {
 				typeName = Hierarchy.DefaultClassBaseType;
+				kindHint = HierarchyIndex.TypeToPrefix<HierarchyClass> ();
 			} else
 				throw new InvalidOperationException($"Unsupported hierarchy type {GetType ()}");
 
-			AddBaseType (LookupType (typeIndex, typeName));
-		}
-
-		protected HierarchyObject LookupType (Dictionary<string, HierarchyObject> typeIndex, string typeName)
-		{
-			if (!typeIndex.TryGetValue (typeName, out HierarchyObject type) || type == null)
-				throw new InvalidOperationException ($"Type '{typeName}' not known.");
-			return type;
+			AddBaseType (typeName);
 		}
 
 		protected void AddBaseType (HierarchyObject baseType)
@@ -146,44 +139,13 @@ namespace Java.Interop.Bindings.Compiler
 			baseTypes.Add (baseType);
 		}
 
-		(string FullName, string FullManagedName) MakeFullyQualifiedName ()
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
 		{
 			if (String.IsNullOrEmpty (Name))
 				throw new InvalidOperationException ("Name is required");
 
-			var name = new List<string> {
-				Name
-			};
-
-			List <string> managedName;
-			if (String.IsNullOrEmpty (ManagedName))
-				managedName = null;
-			else {
-				managedName = new List<string> {
-					ManagedName
-				};
-			}
-
-			HierarchyBase parent = Parent;
-			while (parent != null) {
-				var element = parent as HierarchyElement;
-				if (element == null)
-					break;
-
-				name.Add (element.Name);
-				managedName?.Add (element.ManagedName ?? element.Name);
-				parent = element.Parent;
-			}
-
-			return (MakeName (name), MakeName (managedName));
-		}
-
-		string MakeName (List<string> components)
-		{
-			if (components == null)
-				return String.Empty;
-			components.Reverse ();
-			return String.Join (".", components);
+			string managedName = GetManagedName ();
+			return (managedName, BuildFullName (managedName, (HierarchyElement parent) => parent.GetManagedName ()));
 		}
 	}
 }

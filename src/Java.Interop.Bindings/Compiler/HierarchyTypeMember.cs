@@ -25,12 +25,37 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
-	public class HierarchyTypeMember : HierarchyElement
+	public abstract class HierarchyTypeMember : HierarchyElement
 	{
+		ApiTypeMember apiTypeMember;
+
+		protected ApiTypeMember ApiTypeMember => apiTypeMember;
+		public bool Final { get; set; }
+		public bool Static { get; set; }
+		public ApiVisibility Visibility { get; set; }
+
 		public HierarchyTypeMember (HierarchyObject parent) : base (parent)
 		{
+		}
+
+		public override void Init (ApiElement apiElement)
+		{
+			base.Init (apiElement);
+
+			apiTypeMember = EnsureApiElementType<ApiTypeMember> (apiElement);
+			Final = apiTypeMember.Final;
+			Static = apiTypeMember.Static;
+			Visibility = apiTypeMember.Visibility;
+		}
+
+		protected override string GenerateFullJavaName ()
+		{
+			EnsureName ();
+			return Name;
 		}
 	}
 }

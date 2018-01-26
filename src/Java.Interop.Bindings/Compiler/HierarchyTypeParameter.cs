@@ -25,12 +25,45 @@
 // THE SOFTWARE.
 using System;
 
+using Java.Interop.Bindings.Syntax;
+
 namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyTypeParameter : HierarchyElement
 	{
+		ApiTypeParameter apiTypeParameter;
+
+		protected ApiTypeParameter ApiTypeParameter => apiTypeParameter;
+
+		// Unused for now
+		//
+		// public string ClassBound { get; set; }
+		// public string JniClassBound { get; set; }
+		// public string InterfaceBounds { get; set; }
+		// public string JniInterfaceBounds { get; set; }
+
 		public HierarchyTypeParameter (HierarchyBase parent) : base (parent)
 		{
+		}
+
+		public override void Init (ApiElement apiElement)
+		{
+			base.Init (apiElement);
+
+			apiTypeParameter = EnsureApiElementType<ApiTypeParameter> (apiElement);
+
+			// Unused for now
+			//
+			// ClassBound = apiTypeParameter.ClassBound;
+			// JniClassBound = apiTypeParameter.JniClassBound;
+			// InterfaceBounds = apiTypeParameter.InterfaceBounds;
+			// JniInterfaceBounds = apiTypeParameter.JniInterfaceBounds;
+		}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			string managedName = GetManagedName ();
+			return (managedName, managedName);
 		}
 	}
 }

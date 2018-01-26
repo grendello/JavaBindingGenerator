@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected HierarchyAttributePreserveGenerator (HierarchyAttributePreserve attribute) : base (attribute)
 		{}
 
-		protected override void OutputParameters (Stream output)
+		protected override void OutputParameters (TextWriter output)
 		{
 			if (!Attribute.AllMembers && !Attribute.Conditional)
 				return;

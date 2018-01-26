@@ -172,8 +172,8 @@
   <attr path="/api/package[@name='android.content.pm']/class[@name='ApplicationInfo.DisplayNameComparator']/implements[@name='java.util.Comparator']" name="name">java.util.Comparator&lt;android.content.pm.ApplicationInfo&gt;</attr>
   <attr path="/api/package[@name='android.content.pm']/class[@name='PackageItemInfo.DisplayNameComparator']/implements[@name='java.util.Comparator']" name="name">java.util.Comparator&lt;android.content.pm.PackageItemInfo&gt;</attr>
   <attr path="/api/package[@name='android.content.pm']/class[@name='ResolveInfo.DisplayNameComparator']/implements[@name='java.util.Comparator']" name="name">java.util.Comparator&lt;android.content.pm.ResolveInfo&gt;</attr>
-  <attr path="/api/package[@name='android.database']/class[@name='CursorJoiner']/implements[@name='java.lang.Iterable']" name="name">java.lang.Iterable&lt;android.database.CursorJoiner.Result&gt;</attr>
-  <attr path="/api/package[@name='android.database']/class[@name='CursorJoiner']/implements[@name='java.util.Iterator']" name="name">java.util.Iterator&lt;android.database.CursorJoiner.Result&gt;</attr>
+  <attr path="/api/package[@name='android.database']/class[@name='CursorJoiner']/implements[@name='java.lang.Iterable']" name="name-generic-aware">java.lang.Iterable&lt;android.database.CursorJoiner.Result&gt;</attr>
+  <attr path="/api/package[@name='android.database']/class[@name='CursorJoiner']/implements[@name='java.util.Iterator']" name="name-generic-aware">java.util.Iterator&lt;android.database.CursorJoiner.Result&gt;</attr>
   <attr path="/api/package[@name='android.drm']/class[@name='DrmConvertedStatus']/field[@name='statusCode']" name="type" api-since="11">Android.Drm.DrmConvertedStatusCode</attr>
   <attr path="/api/package[@name='android.drm']/class[@name='DrmInfoStatus']/field[@name='infoType']" name="type" api-since="11">Android.Drm.DrmInfoRequestType</attr>
   <attr path="/api/package[@name='android.drm']/class[@name='DrmInfoStatus']/field[@name='statusCode']" name="type" api-since="11">Android.Drm.DrmInfoStatusCode</attr>
@@ -202,7 +202,7 @@
   <attr path="/api/package[@name='android.media.audiofx']/interface[@name='PresetReverb.OnParameterChangeListener']/method[@name='onParameterChange']/parameter[@name='effect']" name="sender" api-since="9">true</attr>
   <attr path="/api/package[@name='android.media.audiofx']/interface[@name='Virtualizer.OnParameterChangeListener']/method[@name='onParameterChange']/parameter[@name='effect']" name="sender" api-since="9">true</attr>
   <attr path="/api/package[@name='android.nfc']/class[@name='NdefRecord']/method[@name='getType']" name="managedName" api-since="9">GetTypeInfo</attr>
-  <attr path="/api/package[@name='android.os']/class[@name='AsyncTask']" name="name">AsyncTask&lt;Params, Progress, Result&gt;</attr>
+  <attr path="/api/package[@name='android.os']/class[@name='AsyncTask']" name="name-generic-aware">AsyncTask&lt;Params, Progress, Result&gt;</attr>
   <attr path="/api/package[@name='android.os']/interface[@name='IBinder']" name="managedName">IBinder</attr>
   <attr path="/api/package[@name='android.os']/interface[@name='IInterface']" name="managedName">IInterface</attr>
   <attr path="/api/package[@name='android.preference']" name="managedName">Android.Preferences</attr>
@@ -283,8 +283,8 @@
   <attr path="/api/package[@name='android.hardware']/interface[@name='SensorListener']/method[@name='onAccuracyChanged']" name="argsType">SensorListenerAccuracyChangedEventArgs</attr>
   <attr path="/api/package[@name='android.hardware']/interface[@name='SensorListener']/method[@name='onSensorChanged']" name="argsType">SensorListenerSensorChangedEventArgs</attr>
 
-  <attr path="/api/package[@name='android.widget']/class[@name='AdapterView']" name="name">AdapterView&lt;T&gt;</attr>
-  <attr path="/api/package[@name='android.widget']/class[@name='ArrayAdapter']" name="name">ArrayAdapter&lt;T&gt;</attr>
+  <attr path="/api/package[@name='android.widget']/class[@name='AdapterView']" name="name-generic-aware">AdapterView&lt;T&gt;</attr>
+  <attr path="/api/package[@name='android.widget']/class[@name='ArrayAdapter']" name="name-generic-aware">ArrayAdapter&lt;T&gt;</attr>
   <attr path="/api/package[@name='android.widget']/class[@name='AutoCompleteTextView']/method[@name='setAdapter']/parameter[@name='adapter']" name="type">android.widget.ListAdapter</attr>
   <attr path="/api/package[@name='android.widget']/class[@name='CursorTreeAdapter']/method[@name='getChild']" name="return">java.lang.Object</attr>
   <attr path="/api/package[@name='android.widget']/class[@name='CursorTreeAdapter']/method[@name='getGroup']" name="return">java.lang.Object</attr>
@@ -309,7 +309,7 @@
   <attr path="/api/package[@name='java.lang']/class[@name='StringBuffer']/method[@name='append']" name="managedReturn">Java.Lang.IAppendable</attr>
   <attr path="/api/package[@name='java.lang']/class[@name='StringBuilder']/method[@name='append']" name="managedReturn">Java.Lang.IAppendable</attr>
   <attr path="/api/package[@name='java.lang']/interface[@name='CharSequence']" name="managedName">ICharSequence</attr>
-  <attr path="/api/package[@name='java.lang']/interface[@name='Iterable']" name="name">Iterable&lt;T&gt;</attr>
+  <attr path="/api/package[@name='java.lang']/interface[@name='Iterable']" name="name-generic-aware">Iterable&lt;T&gt;</attr>
   <attr path="/api/package[@name='java.nio.channels']/class[@name='Channels']/method[@name='newChannel' and @return='java.nio.channels.ReadableByteChannel']" name="managedName">NewReadableChannel</attr>
   <attr path="/api/package[@name='java.nio.channels']/class[@name='Channels']/method[@name='newChannel' and @return='java.nio.channels.WritableByteChannel']" name="managedName">NewWritableChannel</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Dictionary']/method/parameter[@name='key']" name="type">K</attr>
@@ -317,25 +317,25 @@
   <attr path="/api/package[@name='java.util']/class[@name='Dictionary']" name="name">Dictionary&lt;K, V&gt;</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/method/parameter[@name='key']" name="type">K</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/method/parameter[@name='value']" name="type">V</attr>
-  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/implements[@name='java.util.Map']" name="name">java.util.Map&lt;K, V&gt;</attr>
-  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']" name="extends">java.util.Dictionary&lt;K, V&gt;</attr>
-  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']" name="name">Hashtable&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']/implements[@name='java.util.Map']" name="name-generic-aware">java.util.Map&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']" name="extends-generic-aware">java.util.Dictionary&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/class[@name='Hashtable']" name="name-generic-aware">Hashtable&lt;K, V&gt;</attr>
   <attr path="/api/package[@name='java.util']/class[@name='Properties']" name="extends">java.lang.Object</attr>
   <attr path="/api/package[@name='java.util']/class[@name='ResourceBundle']/method[@name='handleGetObject']" name="visibility">public</attr>
-  <attr path="/api/package[@name='java.util']/class[@name='Scanner']/implements[@name='java.util.Iterator']" name="name">java.lang.Iterator&lt;java.lang.String&gt;</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Collection']/implements[@name='java.lang.Iterable']" name="name">java.lang.Iterable&lt;E&gt;</attr>
+  <attr path="/api/package[@name='java.util']/class[@name='Scanner']/implements[@name='java.util.Iterator']" name="name-generic-aware">java.lang.Iterator&lt;java.lang.String&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Collection']/implements[@name='java.lang.Iterable']" name="name-generic-aware">java.lang.Iterable&lt;E&gt;</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Collection']/method[@name='containsAll']/parameter[@type='java.util.Collection&lt;?&gt;']" name="type">java.util.Collection&lt;E&gt;</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Collection']/method[@name='removeAll']/parameter[@type='java.util.Collection&lt;?&gt;']" name="type">java.util.Collection&lt;E&gt;</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Collection']/method[@name='retainAll']/parameter[@type='java.util.Collection&lt;?&gt;']" name="type">java.util.Collection&lt;E&gt;</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Collection']/method[@name='toArray']/parameter[@type='T[]']" name="type">E[]</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Collection']/method[@name='toArray' and count(parameter)=1]" name="return">E[]</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Collection']" name="name">Collection&lt;E&gt;</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Comparator']" name="name">Comparator&lt;T&gt;</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Iterator']" name="name">Iterator&lt;E&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Collection']" name="name-generic-aware">Collection&lt;E&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Comparator']" name="name-generic-aware">Comparator&lt;T&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Iterator']" name="name-generic-aware">Iterator&lt;E&gt;</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Map']/method/parameter[@name='key']" name="type">K</attr>
   <attr path="/api/package[@name='java.util']/interface[@name='Map']/method/parameter[@name='value']" name="type">V</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Map']" name="name">Map&lt;K, V&gt;</attr>
-  <attr path="/api/package[@name='java.util']/interface[@name='Map.Entry']" name="name">Map.Entry&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Map']" name="name-generic-aware">Map&lt;K, V&gt;</attr>
+  <attr path="/api/package[@name='java.util']/interface[@name='Map.Entry']" name="name-generic-aware">Map.Entry&lt;K, V&gt;</attr>
   <attr path="/api/package[@name='javax.security.auth.callback']/interface[@name='CallbackHandler']/method[@name='handle']" name="managedName">HandleCallbacks</attr>
   <attr path="/api/package[@name='org.xmlpull.v1']" name="managedName">Org.XmlPull.V1</attr>
   <attr path="/api/package[@name='android.util']/class[@name='Log']/method[@name='d']" name="managedName">Debug</attr>
@@ -479,7 +479,8 @@
   <!-- For these types' constructors, both Map and SortedMap are mapped to IDictionary and one results in duplicate definition. So one needs to be removed. -->
   <remove-node path="/api/package[@name='java.util']/class[@name='TreeMap']/constructor[parameter[1][@type='java.util.SortedMap&lt;K, ? extends V>']]" />
   <remove-node path="/api/package[@name='java.util.concurrent']/class[@name='ConcurrentSkipListMap']/constructor[parameter[1][@type='java.util.SortedMap&lt;K, ? extends V>']]" api-since="10" />
-  
+  <remove-node path="/api/package[@name='java.util.concurrent']/class[@name='ConcurrentSkipListMap']/implements[@name='java.util.concurrent.ConcurrentNavigableMap']" api-since="10" />
+
   <!-- FIXME: they bring too messy breakages, so just kill 'em so far -->
   <remove-node path="/api/package[@name='java.util.concurrent']/class[@name='ConcurrentSkipListSet']" api-since="10" />
   <remove-node path="/api/package[@name='java.util.concurrent']/interface[@name='ConcurrentNavigableMap']" api-since="10" />
@@ -1093,13 +1094,15 @@
   <attr api-until="9" path="/api/package/class" name="deprecated">This platform is deprecated. Please re-target your app for a minumum of API-10</attr>
   <attr api-until="9" path="/api/package/interface" name="deprecated">This platform is deprecated. Please re-target your app for a minumum of API-10</attr>
 
+<!-- Removed because it is a duplicate (also defined in enummetadata)
   <add-node api-until="12" path="/api">
     <enum name="Android.Views.Axis" />
   </add-node>
+
   <add-node api-until="14" path="/api">
     <enum name="Android.Views.SystemUiFlags" />
   </add-node>
-
+-->
   <attr path="/api/package[@name='android.view.textservice']/interface[@name='SpellCheckerSession.SpellCheckerSessionListener']/method[@name='onGetSuggestions']"
       name="argsType"
   >SpellCheckerSessionEventArgs</attr>
@@ -1196,9 +1199,16 @@
   -->
   
   <remove-node path="/api/package[@name='java.nio.channels']/interface[@name='NetworkChannel']" /> 
+  <remove-node path="/api/package[@name='java.nio.channels']/interface[@name='MulticastChannel']" /> 
   <remove-node path="/api/package[@name='java.nio.channels']/class[@name='DatagramChannel']/implements[@name='java.nio.channels.NetworkChannel']" /> 
   <remove-node path="/api/package[@name='java.nio.channels']/class[@name='SocketChannel']/implements[@name='java.nio.channels.NetworkChannel']" /> 
   <remove-node path="/api/package[@name='java.nio.channels']/class[@name='ServerSocketChannel']/implements[@name='java.nio.channels.NetworkChannel']" /> 
+
+  <remove-node path="/api/package[@name='java.nio.channels']/class[@name='AsynchronousServerSocketChannel']/implements[@name='java.nio.channels.NetworkChannel']" />
+  <remove-node path="/api/package[@name='java.nio.channels']/class[@name='AsynchronousSocketChannel']/implements[@name='java.nio.channels.NetworkChannel']" />
+
+  <remove-node path="/api/package[@name='java.nio.channels']/class[@name='DatagramChannel']/implements[@name='java.nio.channels.MulticastChannel']" />
+
 
   <attr path="/api/package[@name='java.util.concurrent.atomic']/class[@name='Striped64']" name="visibility">public</attr>
 

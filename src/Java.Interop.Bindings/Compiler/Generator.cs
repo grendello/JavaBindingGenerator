@@ -88,10 +88,10 @@ namespace Java.Interop.Bindings.Compiler
 					(HierarchyElement nsm) => {
 						if (nsFileWriter != null) {
 							WriteFileHeader (ns, nsFileWriter);
-							GenerateNamespaceMember (nsm, nsFileWriter, path.FullPath);
+							GenerateNamespaceMember (nsm, nsFileWriter, outputDirectoryRoot);
 							WriteFileHeader (ns, nsFileWriter);
 						} else
-							GenerateNamespaceMember (ns, nsm, path.FullPath);
+							GenerateNamespaceMember (ns, nsm, outputDirectoryRoot);
 					}
 				);
 			} finally {

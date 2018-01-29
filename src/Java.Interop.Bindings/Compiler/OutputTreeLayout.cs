@@ -1,5 +1,5 @@
 //
-// XamarinNameTranslationProvider.cs
+// OutputTreeLayout.cs
 //
 // Author:
 //       Marek Habersack <grendel@twistedcode.net>
@@ -27,29 +27,9 @@ using System;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public class XamarinNameTranslationProvider : PlainNameTranslationProvider
+	public class OutputTreeLayout
 	{
-		static readonly Guid guid = new Guid ("7fe9762d-ed0e-431b-b2ef-ab3a2b4306be");
-
-		// This is a hack used by the old generator - it uppercases a symbol segment if it consists only of two
-		// characters
-		protected bool UpperCaseTwoLetterSegments { get; set; } = true;
-
-		public XamarinNameTranslationProvider () : base ("Xamarin.Android", guid)
-		{}
-
-		public override void Validate()
-		{}
-
-		protected override string TranslateSegment (string segment)
-		{
-			if (String.IsNullOrEmpty (segment))
-				throw new ArgumentException ("must not be null or empty", nameof (segment));
-
-			if (UpperCaseTwoLetterSegments && segment.Length == 2)
-				return segment.ToUpper ();
-
-			return base.TranslateSegment (segment);
-		}
+		public OutputNamespaceTreeStyle NamespaceTreeStyle { get; set; } = OutputNamespaceTreeStyle.FirstLevelThenFullShallow;
+		public OutputNestedTypesStyle NestedTypesStyle { get; set; } = OutputNestedTypesStyle.SeparateFileDot;
 	}
 }

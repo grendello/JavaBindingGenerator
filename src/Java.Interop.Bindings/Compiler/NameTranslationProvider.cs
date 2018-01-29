@@ -27,7 +27,7 @@ using System;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public abstract class NameTranslationProvider
+	public abstract class NameTranslationProvider : BaseProvider
 	{
 		public string Name { get; }
 		public Guid ID { get; }

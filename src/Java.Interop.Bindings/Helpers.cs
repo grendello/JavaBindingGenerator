@@ -76,5 +76,12 @@ namespace Java.Interop.Bindings
 
 			return fullTypeName.Substring (0, lastDot);
 		}
+
+		public static T EnsureNotNull<T> (string name, T value) where T: class
+		{
+			if (value == null)
+				throw new InvalidOperationException ($"{name} must not be null");
+			return value;
+		}
 	}
 }

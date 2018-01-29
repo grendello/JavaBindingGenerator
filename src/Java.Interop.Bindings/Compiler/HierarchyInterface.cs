@@ -34,5 +34,17 @@ namespace Java.Interop.Bindings.Compiler
 
 		public HierarchyInterface (GeneratorContext context, HierarchyElement parent) : base (context, parent)
 		{}
+
+		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
+		{
+			if (String.IsNullOrEmpty (Name))
+				throw new InvalidOperationException ("Name is required");
+
+			string managedName = GetManagedName ();
+			if (managedName [0] != 'I')
+				managedName = $"I{managedName}";
+
+			return (managedName, BuildFullName (managedName, (HierarchyElement parent) => parent.GetManagedName ()));
+		}
 	}
 }

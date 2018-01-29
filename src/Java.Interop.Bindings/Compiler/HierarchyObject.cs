@@ -104,6 +104,55 @@ namespace Java.Interop.Bindings.Compiler
 				AddDefaultBaseType (typeIndex);
 		}
 
+		// Walks up the parent chain and calculates the namespace based on the parent types instead of just
+		// reading the full managed name which can lead to invalid results
+		public virtual string GetNamespace ()
+		{
+			if (Parent == null)
+				return null;
+
+			HierarchyElement parent = ParentElement;
+			HierarchyBase previousParent = parent;
+			var segments = new List <string> ();
+			while (parent != null) {
+				var ns = parent as HierarchyNamespace;
+				if (ns != null) {
+					if (!(previousParent is HierarchyNamespace))
+						throw new InvalidOperationException ("Parent namespaces must not be interlaced with other types");
+					segments.Add (ns.GetManagedName ());
+				}
+				previousParent = parent;
+				parent = parent.ParentElement;
+			}
+
+			if (segments.Count == 0)
+				throw new InvalidOperationException ($"A type must be a child of at least one namespace");
+
+			return String.Join (".", segments);
+		}
+
+		// Builds, possibly nested, type name excluding any and all namespaces. Nested type name will have its
+		// parent class names separated with dots.
+		public virtual string GetNameWithoutNamespace ()
+		{
+			if (Parent == null)
+				return GetManagedName ();
+
+			HierarchyElement parent = ParentElement;
+			var segments = new List <string> {
+				GetManagedName ()
+			};
+			while (parent != null) {
+				if (parent is HierarchyNamespace)
+					break;
+
+				segments.Add (parent.GetManagedName ());
+				parent = parent.ParentElement;
+			}
+
+			return String.Join (".", segments);
+		}
+
 		protected virtual void AddBaseTypes (HierarchyIndex typeIndex)
 		{
 			if (typeIndex == null)

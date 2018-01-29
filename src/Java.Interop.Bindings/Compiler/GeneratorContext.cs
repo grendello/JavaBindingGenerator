@@ -41,49 +41,52 @@ namespace Java.Interop.Bindings.Compiler
 
 		public NameTranslationProvider NameTranslationProvider {
 			get => nameTranslationProvider;
-			set => nameTranslationProvider = EnsureNotNull ("NameTranslationProvider", value);
+			set => nameTranslationProvider = Helpers.EnsureNotNull ("NameTranslationProvider", value);
 		}
 
 		public OutputPathProvider OutputPathProvider {
 			get => outputPathProvider;
-			set => outputPathProvider = EnsureNotNull ("OutputPathProvider", value);
+			set => outputPathProvider = Helpers.EnsureNotNull ("OutputPathProvider", value);
 		}
 
 		public FormattingCodeGenerator CodeGenerator {
 			get => codeGenerator;
-			set => codeGenerator = EnsureNotNull ("CodeGenerator", value);
+			set => codeGenerator = Helpers.EnsureNotNull ("CodeGenerator", value);
 		}
 
 		public Encoding FileEncoding {
 			get => fileEncoding;
-			set => fileEncoding = EnsureNotNull ("FileEncoding", value);
+			set => fileEncoding = Helpers.EnsureNotNull ("FileEncoding", value);
 		}
 
 		public Hierarchy HierarchyBuilder {
 			get => hierarchyBuilder;
-			set => hierarchyBuilder = EnsureNotNull ("HierarchyBuilder", value);
+			set => hierarchyBuilder = Helpers.EnsureNotNull ("HierarchyBuilder", value);
 		}
 
 		public string FileHeaderComment { get; set; }
 		public bool DumpHierarchy { get; set; }
 		public string HierarchyDumpFilePath { get; set; }
+		public bool UsePartialClasses { get; set; } = true;
 
 		public GeneratorContext (FormattingCodeGenerator codeGenerator, Encoding fileEncoding = null)
 		{
 			CodeGenerator = codeGenerator ?? throw new ArgumentNullException (nameof (codeGenerator));
-			OutputPathProvider = new DefaultOutputPathProvider (this);
 			FileEncoding = fileEncoding ?? Encoding.UTF8;
 			HierarchyBuilder = new XamarinAndroidHierarchy (this);
 			NameTranslationProvider = new XamarinNameTranslationProvider ();
+			OutputPathProvider = new DefaultOutputPathProvider (this, new OutputTreeLayout ());
 		}
 
 		internal void AssertSaneEnvironment ()
 		{
 			if (NameTranslationProvider == null)
 				throw new InvalidOperationException ("Name translation provider not defined");
+			NameTranslationProvider.Validate ();
 
 			if (OutputPathProvider == null)
 				throw new InvalidOperationException ("Output path provider not defined");
+			OutputPathProvider.Validate ();
 
 			if (CodeGenerator == null)
 				throw new InvalidOperationException ("Code generator not defined");
@@ -93,13 +96,6 @@ namespace Java.Interop.Bindings.Compiler
 
 			if (HierarchyBuilder == null)
 				throw new InvalidOperationException ("Hierarchy builder not defined");
-		}
-
-		T EnsureNotNull<T> (string name, T value) where T: class
-		{
-			if (value == null)
-				throw new InvalidOperationException ($"{name} must not be null");
-			return value;
 		}
 	}
 }

@@ -30,8 +30,23 @@ namespace Java.Interop.Bindings.Compiler
 {
 	public class DefaultOutputPathProvider : OutputPathProvider
 	{
-		public DefaultOutputPathProvider (GeneratorContext context) : base (context)
-		{}
+		public OutputTreeLayout TreeLayout { get; }
+
+		public DefaultOutputPathProvider (GeneratorContext context, OutputTreeLayout treeLayout) : base (context)
+		{
+			TreeLayout = treeLayout ?? throw new ArgumentNullException (nameof (treeLayout));
+		}
+
+		public override void Validate ()
+		{
+			switch (TreeLayout.NestedTypesStyle) {
+				case OutputNestedTypesStyle.SeparateFileDot:
+				case OutputNestedTypesStyle.SeparateFileUnderscore:
+					if (!Context.UsePartialClasses)
+						throw new InvalidOperationException ("Nested types in separate files require partial classes");
+					break;
+			}
+		}
 
 		public override FilesystemPath GetPathFor (string rootDirectory, HierarchyElement element)
 		{
@@ -41,47 +56,149 @@ namespace Java.Interop.Bindings.Compiler
 			if (element == null)
 				throw new ArgumentNullException (nameof (element));
 
-			FilesystemPath relativePath = null;
 			switch (element) {
 				case HierarchyNamespace ns:
-					relativePath = new FilesystemPath (MakePath (ns.GetManagedName (true)), true);
-					break;
-
 				case HierarchyClass klass:
-					relativePath = GetFilePath (klass);
-					break;
-
 				case HierarchyInterface iface:
-					relativePath = GetFilePath (iface);
-					break;
-
 				case HierarchyEnum enm:
-					relativePath = GetFilePath (enm);
 					break;
 
 				default:
 					throw new InvalidOperationException ($"Unsupported hierarchy type '{element.GetType ()}'");
 			}
 
-			return relativePath;
+			Func<string, HierarchyElement, FilesystemPath> getter = null;
+			switch (TreeLayout.NamespaceTreeStyle) {
+				case OutputNamespaceTreeStyle.Single:
+					getter = GetPathFor_Single;
+					break;
 
-			string MakePath (string elementName, string extension = null)
-			{
-				string relPath = elementName?.Replace ('.', Path.DirectorySeparatorChar);
-				if (relPath == null)
-					return null;
+				case OutputNamespaceTreeStyle.Shallow:
+					getter = GetPathFor_Shallow;
+					break;
 
-				string ret = Path.Combine (rootDirectory, relPath);
-				if (!String.IsNullOrEmpty (extension))
-					ret += $".{extension}";
+				case OutputNamespaceTreeStyle.Deep:
+					getter = GetPathFor_Deep;
+					break;
 
-				return ret;
+				case OutputNamespaceTreeStyle.FirstLevelThenFullShallow:
+					getter = GetPathFor_FirstLevelThenFullShallow;
+					break;
+
+				case OutputNamespaceTreeStyle.FirstLevelThenFullSingle:
+					getter = GetPathFor_FirstLevelThenFullSingle;
+					break;
+
+				case OutputNamespaceTreeStyle.FirstLevelThenShortShallow:
+					getter = GetPathFor_FirstLevelThenShortShallow;
+					break;
+
+				case OutputNamespaceTreeStyle.FirstLevelThenShortSingle:
+					getter = GetPathFor_FirstLevelThenShortSingle;
+					break;
+
+				default:
+					throw new InvalidOperationException ($"Unsupported namespace tree style {TreeLayout.NamespaceTreeStyle}");
 			}
 
-			FilesystemPath GetFilePath (HierarchyElement e)
-			{
-				return new FilesystemPath (MakePath (e.GetManagedName (true), Context.CodeGenerator.FileExtension), false);
+			return getter (rootDirectory, element);
+		}
+
+		protected FilesystemPath GetPathFor_Single (string rootDirectory, HierarchyElement element)
+		{
+			if (element is HierarchyNamespace)
+				return null;
+
+			throw new NotImplementedException ();
+		}
+
+		protected FilesystemPath GetPathFor_Shallow (string rootDirectory, HierarchyElement element)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected FilesystemPath GetPathFor_Deep (string rootDirectory, HierarchyElement element)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected FilesystemPath GetPathFor_FirstLevelThenFullShallow (string rootDirectory, HierarchyElement element)
+		{
+			string fullManagedName = element.GetManagedName (true);
+			bool isDirectory;
+			string path = GetFirstNameSegment (fullManagedName);
+
+			Logger.Debug ($"Element: {element.FullName} (managed: {fullManagedName})");
+			Logger.Debug ($"Initial path: {path}");
+			if (element is HierarchyNamespace) {
+				Logger.Debug ("Is namespace");
+				isDirectory = true;
+				path = Path.Combine (path, fullManagedName);
+			} else {
+				var obj = element as HierarchyObject;
+				if (obj == null)
+					throw new InvalidOperationException ("Only HierarchyObject and HierarchyNamespace instances can be used to compute output file name");
+				Logger.Debug ("Is type");
+				isDirectory = false;
+				path = Path.Combine (path, obj.GetNamespace (), obj.GetNameWithoutNamespace ());
 			}
+			Logger.Debug ($"Final relative path: {path}");
+			Logger.Debug (String.Empty);
+			return GetFilePath (rootDirectory, path, isDirectory);
+		}
+
+		protected FilesystemPath GetPathFor_FirstLevelThenShortShallow (string rootDirectory, HierarchyElement element)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected FilesystemPath GetPathFor_FirstLevelThenFullSingle (string rootDirectory, HierarchyElement element)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected FilesystemPath GetPathFor_FirstLevelThenShortSingle (string rootDirectory, HierarchyElement element)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected string MakePath (string rootDirectory, string elementName, string extension = null)
+		{
+			string ret = Path.Combine (rootDirectory, elementName);
+			if (!String.IsNullOrEmpty (extension))
+				ret += $".{extension}";
+
+			return ret;
+		}
+
+		protected FilesystemPath GetFilePath (string rootDirectory, string fileName, bool isDirectory = false)
+		{
+			return new FilesystemPath (MakePath (rootDirectory, fileName, isDirectory ? null : Context.CodeGenerator.FileExtension), isDirectory);
+		}
+
+		string GetLastNameSegment (string fullManagedName)
+		{
+			return GetNameSegment (fullManagedName, false);
+		}
+
+		string GetFirstNameSegment (string fullManagedName)
+		{
+			return GetNameSegment (fullManagedName, true);
+		}
+
+		string GetNameSegment (string fullManagedName, bool first)
+		{
+			if (String.IsNullOrEmpty (fullManagedName))
+				throw new ArgumentException ("must not be null or empty", nameof (fullManagedName));
+
+			int dot = first ? fullManagedName.IndexOf ('.') : fullManagedName.LastIndexOf ('.');
+			if (dot == 0)
+				throw new InvalidOperationException ($"Full valid managed type name (including namespace) expected, got '{fullManagedName}'");
+
+			if (dot < 0)
+				return fullManagedName;
+
+			return first ? fullManagedName.Substring (0, dot) : fullManagedName.Substring (dot + 1);
 		}
 	}
 }

@@ -24,12 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+
+using Java.Interop.Bindings.Syntax;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	// TODO: invoker managed names must be generated after we have the interface name resolved - add amechanism to
-	// do that in Hierarchy
 	public class HierarchyInterfaceInvoker : HierarchyClass
 	{
 		HierarchyInterface InvokedInterface { get; }
@@ -37,6 +36,7 @@ namespace Java.Interop.Bindings.Compiler
 		public HierarchyInterfaceInvoker (GeneratorContext context, HierarchyElement parent, HierarchyInterface invokedInterface) : base (context, parent)
 		{
 			InvokedInterface = invokedInterface ?? throw new ArgumentNullException (nameof (invokedInterface));
+			Visibility = ApiVisibility.Internal;
 		}
 
 		public override void Init ()
@@ -60,6 +60,9 @@ namespace Java.Interop.Bindings.Compiler
 		{
 			if (String.IsNullOrEmpty (baseName))
 				return String.Empty;
+
+			if (baseName.EndsWith ("Invoker", StringComparison.Ordinal))
+				return baseName;
 
 			return $"{baseName}Invoker";
 		}

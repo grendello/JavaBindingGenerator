@@ -55,7 +55,7 @@ namespace Java.Interop.Bindings.Compiler
 
 		public override string ToString ()
 		{
-			return $"{GetType ()} ({FullPath}; {IsDirectory}";
+			return $"{GetType ()} ({FullPath}; {IsDirectory})";
 		}
 	}
 }

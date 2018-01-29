@@ -1,5 +1,5 @@
 //
-// XamarinNameTranslationProvider.cs
+// OutputNestedTypesStyle.cs
 //
 // Author:
 //       Marek Habersack <grendel@twistedcode.net>
@@ -27,29 +27,31 @@ using System;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public class XamarinNameTranslationProvider : PlainNameTranslationProvider
+	public enum OutputNestedTypesStyle
 	{
-		static readonly Guid guid = new Guid ("7fe9762d-ed0e-431b-b2ef-ab3a2b4306be");
+		// Nested type is within the same file as the outer class
+		SameFile,
 
-		// This is a hack used by the old generator - it uppercases a symbol segment if it consists only of two
-		// characters
-		protected bool UpperCaseTwoLetterSegments { get; set; } = true;
+		//
+		// Nested type is within a separate file whose name consists of the outer class name(s) separated with
+		// underscores, followed by the innermost type name separated by underscore:
+		//
+		//    OuterClass_InnerClass.cs
+		//    OuterClass_InnerClass_InnerMostInterface.cs
+		//
+		// Requires GlobalContext.UsePartialClasses to be `true`
+		//
+		SeparateFileUnderscore,
 
-		public XamarinNameTranslationProvider () : base ("Xamarin.Android", guid)
-		{}
-
-		public override void Validate()
-		{}
-
-		protected override string TranslateSegment (string segment)
-		{
-			if (String.IsNullOrEmpty (segment))
-				throw new ArgumentException ("must not be null or empty", nameof (segment));
-
-			if (UpperCaseTwoLetterSegments && segment.Length == 2)
-				return segment.ToUpper ();
-
-			return base.TranslateSegment (segment);
-		}
+		//
+		// Nested type is within a separate file whose name consists of the outer class name(s) separated with
+		// dots, followed by the innermost type name separated by a dot:
+		//
+		//    OuterClass.InnerClass.cs
+		//    OuterClass.InnerClass.InnerMostInterface.cs
+		//
+		// Requires GlobalContext.UsePartialClasses to be `true`
+		//
+		SeparateFileDot,
 	}
 }

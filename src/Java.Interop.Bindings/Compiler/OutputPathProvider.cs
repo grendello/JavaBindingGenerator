@@ -27,7 +27,7 @@ using System;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public abstract class OutputPathProvider
+	public abstract class OutputPathProvider : BaseProvider
 	{
 		public GeneratorContext Context { get; }
 

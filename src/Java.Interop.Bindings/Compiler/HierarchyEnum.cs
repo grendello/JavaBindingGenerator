@@ -44,6 +44,17 @@ namespace Java.Interop.Bindings.Compiler
 		{
 			base.Init (apiElement);
 			apiEnum = EnsureApiElementType<ApiEnum> (apiElement);
+
+			// Enums are special - their name attribute is set to the full managed name
+			int lastDot = apiElement.Name.LastIndexOf ('.');
+			if (lastDot < 0)
+				return;
+
+			if (lastDot == 0)
+				throw new InvalidOperationException($"Type name ({apiElement.Name}) must not start with a dot");
+
+			FullName = Name;
+			Name = apiElement.Name.Substring (lastDot + 1);
 		}
 	}
 }

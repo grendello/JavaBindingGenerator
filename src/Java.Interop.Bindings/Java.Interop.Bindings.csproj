@@ -65,10 +65,14 @@
     <Compile Include="Syntax\ApiTypeParameters.cs" />
     <Compile Include="Syntax\ApiVisibility.cs" />
     <Compile Include="Compiler\Generator.cs" />
+    <Compile Include="Compiler\BaseProvider.cs" />
     <Compile Include="Compiler\NameTranslationProvider.cs" />
     <Compile Include="Compiler\PlainNameTranslationProvider.cs" />
     <Compile Include="Compiler\Xamarin\XamarinNameTranslationProvider.cs" />
     <Compile Include="Compiler\OutputPathProvider.cs" />
+    <Compile Include="Compiler\OutputTreeLayout.cs" />
+    <Compile Include="Compiler\OutputNamespaceTreeStyle.cs" />
+    <Compile Include="Compiler\OutputNestedTypesStyle.cs" />
     <Compile Include="Compiler\DefaultOutputPathProvider.cs" />
     <Compile Include="Compiler\FilesystemPath.cs" />
     <Compile Include="Compiler\HierarchyNamespace.cs" />

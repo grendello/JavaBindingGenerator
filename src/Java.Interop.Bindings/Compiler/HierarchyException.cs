@@ -37,7 +37,7 @@ namespace Java.Interop.Bindings.Compiler
 		public string Type { get; set; }
 		public string TypeGenericAware { get; set; }
 
-		public HierarchyException (HierarchyBase parent) : base (parent)
+		public HierarchyException (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 		}
 

@@ -34,6 +34,9 @@ namespace Java.Interop.Bindings.Compiler.Xamarin
 {
 	public class XamarinAndroidHierarchy : Hierarchy
 	{
+		public XamarinAndroidHierarchy (GeneratorContext context) : base (context)
+		{}
+
 		protected override void SynthesizeElements ()
 		{
 			foreach (HierarchyNamespace ns in Namespaces) {
@@ -57,7 +60,7 @@ namespace Java.Interop.Bindings.Compiler.Xamarin
 			if (parent == null)
 				throw new InvalidOperationException($"Invoker requires that its associated interface ({iface.FullName}) is a child of HierarchyElement");
 
-			var invoker = new HierarchyInterfaceInvoker (iface.Parent as HierarchyElement, iface) {
+			var invoker = new HierarchyInterfaceInvoker (Context, iface.Parent as HierarchyElement, iface) {
 				Visibility = ApiVisibility.Internal
 			};
 			invoker.Init ();

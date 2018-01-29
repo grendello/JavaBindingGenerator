@@ -1,10 +1,10 @@
 //
-// HierarchyInterfaceInvoker.cs
+// PlainNameTranslationProvider.cs
 //
 // Author:
 //       Marek Habersack <grendel@twistedcode.net>
 //
-// Copyright (c) 2017 Microsoft, Inc (http://microsoft.com/)
+// Copyright (c) 2018 Microsoft, Inc (http://microsoft.com/)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,40 +28,43 @@ using System.Collections.Generic;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	// TODO: invoker managed names must be generated after we have the interface name resolved - add amechanism to
-	// do that in Hierarchy
-	public class HierarchyInterfaceInvoker : HierarchyClass
+	public abstract class PlainNameTranslationProvider : NameTranslationProvider
 	{
-		HierarchyInterface InvokedInterface { get; }
+		static readonly Guid guid = new Guid ("450b31d2-f65b-4f34-80cc-59b55388ab98");
 
-		public HierarchyInterfaceInvoker (GeneratorContext context, HierarchyElement parent, HierarchyInterface invokedInterface) : base (context, parent)
+		public PlainNameTranslationProvider () : base ("Plain", guid)
+		{}
+
+		protected PlainNameTranslationProvider (string name, Guid guid) : base (name, guid)
+		{}
+
+		public override string Translate (string javaName)
 		{
-			InvokedInterface = invokedInterface ?? throw new ArgumentNullException (nameof (invokedInterface));
+			if (String.IsNullOrEmpty (javaName))
+				throw new ArgumentException ("must not be null or empty", nameof (javaName));
+
+			if (javaName.Length == 1)
+				return UpperFirst (javaName);
+
+			int dot = javaName.IndexOf ('.');
+			if (dot >= 0) {
+				var segments = new List <string> ();
+				foreach (string s in javaName.Split ('.')) {
+					string segment = TranslateSegment (s);
+					if (String.IsNullOrEmpty (segment))
+						continue;
+					segments.Add (segment);
+				}
+				javaName = String.Join (PreserveDotsInJavaNameTranslation ? "." : String.Empty, segments);
+			} else if (javaName.Length == 2)
+				javaName = javaName.ToUpper ();
+
+			return EnsureValidIdentifier (UpperFirst (javaName));
 		}
 
-		public override void Init ()
+		protected override string TranslateSegment (string segment)
 		{
-			base.Init ();
-
-			Name = MakeInvokerName (InvokedInterface.Name);
-			FullName = GenerateFullJavaName ();
-
-			Logger.Debug ($"Invoker init: name {Name} (for interface {InvokedInterface.Name})");
-		}
-
-		protected override (string ManagedName, string FullManagedName) GenerateManagedNames ()
-		{
-			(string ManagedName, string FullManagedName) names = base.GenerateManagedNames ();
-
-			return (MakeInvokerName (names.ManagedName), MakeInvokerName (names.FullManagedName));
-		}
-
-		string MakeInvokerName (string baseName)
-		{
-			if (String.IsNullOrEmpty (baseName))
-				return String.Empty;
-
-			return $"{baseName}Invoker";
+			return UpperFirst (segment);
 		}
 	}
 }

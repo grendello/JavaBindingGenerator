@@ -33,7 +33,7 @@ namespace Java.Interop.Bindings.Compiler
 		public string ManagedName { get; internal set; }
 		public HierarchyTypeKind Kind { get; }
 
-		public HierarchyType (string name, HierarchyTypeKind kind)
+		public HierarchyType (GeneratorContext context, string name, HierarchyTypeKind kind) : base (context)
 		{
 			if (String.IsNullOrEmpty (name))
 				throw new ArgumentException ("must not be null or empty", nameof (name));

@@ -64,7 +64,7 @@ namespace Java.Interop.Bindings.Compiler
 
 		public bool UseGlobal { get; set; } = false;
 
-		protected HierarchyElement (HierarchyBase parent) 
+		protected HierarchyElement (GeneratorContext context, HierarchyBase parent) : base (context)
 		{
 			Parent = parent ?? throw new ArgumentNullException (nameof (parent));
 			IsBoundAPI = false;
@@ -109,7 +109,7 @@ namespace Java.Interop.Bindings.Compiler
 		{
 			if (String.IsNullOrEmpty (ManagedName))
 				return JavaNameToManagedName (Name);
-			return EnsureValidIdentifier (ManagedName);
+			return Context.NameTranslationProvider.EnsureValidIdentifier (ManagedName);
 		}
 
 		protected void EnsureName ()

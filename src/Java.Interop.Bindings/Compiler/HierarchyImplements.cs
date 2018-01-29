@@ -36,7 +36,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected ApiImplements ApiImplements => apiImplements;
 		public string JniType { get; set; }
 
-		public HierarchyImplements (HierarchyBase parent) : base (parent)
+		public HierarchyImplements (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 		}
 

@@ -38,7 +38,7 @@ namespace Java.Interop.Bindings.Compiler
 		public bool Static { get; set; }
 		public ApiVisibility Visibility { get; set; }
 
-		public HierarchyTypeMember (HierarchyObject parent) : base (parent)
+		public HierarchyTypeMember (GeneratorContext context, HierarchyObject parent) : base (context, parent)
 		{
 		}
 

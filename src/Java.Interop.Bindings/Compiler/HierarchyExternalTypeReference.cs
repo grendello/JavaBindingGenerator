@@ -31,7 +31,7 @@ namespace Java.Interop.Bindings.Compiler
 	{
 		public bool IsManaged { get; }
 
-		public HierarchyExternalTypeReference (HierarchyBase parent, string typeName, bool isManaged = false) : base (parent)
+		public HierarchyExternalTypeReference (GeneratorContext context, HierarchyBase parent, string typeName, bool isManaged = false) : base (context, parent)
 		{
 			if (String.IsNullOrEmpty (nameof (typeName)))
 				throw new ArgumentException ("must not be null or empty", nameof (typeName));

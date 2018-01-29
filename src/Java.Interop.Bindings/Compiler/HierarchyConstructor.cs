@@ -29,7 +29,7 @@ namespace Java.Interop.Bindings.Compiler
 {
 	public class HierarchyConstructor : HierarchyMethod
 	{
-		public HierarchyConstructor (HierarchyObject parent) : base (parent)
+		public HierarchyConstructor (GeneratorContext context, HierarchyObject parent) : base (context, parent)
 		{
 		}
 

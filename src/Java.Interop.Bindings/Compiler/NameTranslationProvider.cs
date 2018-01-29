@@ -1,5 +1,5 @@
 ﻿//
-// NameTranslator.cs
+// NameTranslationProvider.cs
 //
 // Author:
 //       Marek Habersack <grendel@twistedcode.net>
@@ -32,6 +32,9 @@ namespace Java.Interop.Bindings.Compiler
 		public string Name { get; }
 		public Guid ID { get; }
 
+		// If a Java name has a dot in it, preserve the dots when converting to managed name
+		public bool PreserveDotsInJavaNameTranslation { get; set; }
+
 		protected NameTranslationProvider (string name, Guid id)
 		{
 			if (String.IsNullOrEmpty (name))
@@ -43,6 +46,24 @@ namespace Java.Interop.Bindings.Compiler
 			ID = id;
 		}
 
+		public virtual string EnsureValidIdentifier (string identifier)
+		{
+			if (String.IsNullOrEmpty (identifier))
+				throw new InvalidOperationException ($".NET identifier must not be null or empty");
+
+			// TODO: implement full validation (check for VALID characters)
+			return identifier;
+		}
+
+		protected string UpperFirst (string s)
+		{
+			char first = Char.ToUpper (s [0]);
+			if (s.Length > 1)
+				return $"{first}{s.Substring (1)}";
+			return first.ToString ();
+		}
+
+		protected abstract string TranslateSegment (string segment);
 		public abstract string Translate (string javaName);
 	}
 }

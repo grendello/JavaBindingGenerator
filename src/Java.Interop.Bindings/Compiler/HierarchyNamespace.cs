@@ -36,9 +36,9 @@ namespace Java.Interop.Bindings.Compiler
 		protected ApiNameSpace ApiNameSpace => apiNameSpace;
 		public string JniName { get; set; }
 
-		public HierarchyNamespace (Hierarchy parent) : base (parent)
+		public HierarchyNamespace (GeneratorContext context, Hierarchy parent) : base (context, parent)
 		{
-			PreserveDotsInJavaNameTranslation = true;
+			Context.NameTranslationProvider.PreserveDotsInJavaNameTranslation = true;
 		}
 
 		public override void Init (ApiElement apiElement)

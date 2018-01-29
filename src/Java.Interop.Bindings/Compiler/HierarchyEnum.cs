@@ -35,7 +35,7 @@ namespace Java.Interop.Bindings.Compiler
 
 		protected ApiEnum ApiEnum => apiEnum;
 
-		public HierarchyEnum (HierarchyBase parent) : base (parent)
+		public HierarchyEnum (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 			DoNotAddBaseTypes = true;
 		}

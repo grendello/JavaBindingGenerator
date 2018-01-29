@@ -40,7 +40,7 @@ namespace Java.Interop.Bindings.Compiler
 		public string ExtendsGenericAware { get; set; }
 		public bool Obfuscated { get; set; }
 
-		public HierarchyClass (HierarchyElement parent) : base (parent)
+		public HierarchyClass (GeneratorContext context, HierarchyElement parent) : base (context, parent)
 		{
 		}
 

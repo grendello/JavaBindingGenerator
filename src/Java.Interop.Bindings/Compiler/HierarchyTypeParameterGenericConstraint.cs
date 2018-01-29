@@ -37,7 +37,7 @@ namespace Java.Interop.Bindings.Compiler
 
 		public string Type { get; set; }
 
-		public HierarchyTypeParameterGenericConstraint (HierarchyBase parent) : base (parent)
+		public HierarchyTypeParameterGenericConstraint (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{}
 
 		public override void Init (ApiElement apiElement)

@@ -50,7 +50,7 @@ namespace Java.Interop.Bindings.Compiler
 		public bool IsBridge { get; set; }
 		public bool IsSynthetic { get; set; }
 
-		public HierarchyMethod (HierarchyObject parent) : base (parent)
+		public HierarchyMethod (GeneratorContext context, HierarchyObject parent) : base (context, parent)
 		{ }
 
 		public override void Init (ApiElement apiElement)

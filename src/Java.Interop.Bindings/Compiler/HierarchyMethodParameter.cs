@@ -36,7 +36,7 @@ namespace Java.Interop.Bindings.Compiler
 		protected ApiMethodParameter ApiMethodParameter => apiMethodParameter;
 		public string JniType { get; set; }
 
-		public HierarchyMethodParameter (HierarchyBase parent) : base (parent)
+		public HierarchyMethodParameter (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 		}
 

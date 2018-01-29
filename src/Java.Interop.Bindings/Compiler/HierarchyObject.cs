@@ -47,7 +47,7 @@ namespace Java.Interop.Bindings.Compiler
 
 		public IList<HierarchyObject> BaseTypes => baseTypes;
 
-		protected HierarchyObject (HierarchyBase parent) : base (parent)
+		protected HierarchyObject (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 		}
 

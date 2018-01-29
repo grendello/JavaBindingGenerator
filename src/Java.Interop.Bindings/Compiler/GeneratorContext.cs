@@ -73,15 +73,14 @@ namespace Java.Interop.Bindings.Compiler
 			CodeGenerator = codeGenerator ?? throw new ArgumentNullException (nameof (codeGenerator));
 			OutputPathProvider = new DefaultOutputPathProvider (this);
 			FileEncoding = fileEncoding ?? Encoding.UTF8;
-			HierarchyBuilder = new XamarinAndroidHierarchy ();
+			HierarchyBuilder = new XamarinAndroidHierarchy (this);
+			NameTranslationProvider = new XamarinNameTranslationProvider ();
 		}
 
 		internal void AssertSaneEnvironment ()
 		{
-			/*
 			if (NameTranslationProvider == null)
 				throw new InvalidOperationException ("Name translation provider not defined");
-				*/
 
 			if (OutputPathProvider == null)
 				throw new InvalidOperationException ("Output path provider not defined");

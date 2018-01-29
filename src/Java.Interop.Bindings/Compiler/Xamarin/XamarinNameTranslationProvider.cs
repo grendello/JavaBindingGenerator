@@ -1,10 +1,10 @@
-﻿//
-// HierarchyInterface.cs
+//
+// XamarinNameTranslationProvider.cs
 //
 // Author:
 //       Marek Habersack <grendel@twistedcode.net>
 //
-// Copyright (c) 2017 Microsoft, Inc (http://microsoft.com/)
+// Copyright (c) 2018 Microsoft, Inc (http://microsoft.com/)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,26 @@ using System;
 
 namespace Java.Interop.Bindings.Compiler
 {
-	public class HierarchyInterface : HierarchyObject
+	public class XamarinNameTranslationProvider : PlainNameTranslationProvider
 	{
-		public HierarchyInterfaceInvoker Invoker { get; set; }
-		public bool InvokerNotNeeded { get; set; }
+		static readonly Guid guid = new Guid ("7fe9762d-ed0e-431b-b2ef-ab3a2b4306be");
 
-		public HierarchyInterface (GeneratorContext context, HierarchyElement parent) : base (context, parent)
+		// This is a hack used by the old generator - it uppercases a symbol segment if it consists only of two
+		// characters
+		protected bool UpperCaseTwoLetterSegments { get; set; } = true;
+
+		public XamarinNameTranslationProvider () : base ("Xamarin.Android", guid)
 		{}
+
+		protected override string TranslateSegment (string segment)
+		{
+			if (String.IsNullOrEmpty (segment))
+				throw new ArgumentException ("must not be null or empty", nameof (segment));
+
+			if (UpperCaseTwoLetterSegments && segment.Length == 2)
+				return segment.ToUpper ();
+
+			return base.TranslateSegment (segment);
+		}
 	}
 }

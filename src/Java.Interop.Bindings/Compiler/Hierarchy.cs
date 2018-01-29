@@ -51,6 +51,9 @@ namespace Java.Interop.Bindings.Compiler
 		public IList<HierarchyNamespace> Namespaces => namespaces;
 		protected HierarchyIndex TypeIndex { get; } = new HierarchyIndex ();
 
+		public Hierarchy (GeneratorContext context) : base (context)
+		{}
+
 		public void Build (IList<ApiElement> rawElements)
 		{ 
 			if (rawElements == null || rawElements.Count == 0)
@@ -550,29 +553,29 @@ namespace Java.Interop.Bindings.Compiler
 			HierarchyBase ret = null;
 
 			if (type == typeof (HierarchyNamespace))
-				ret = new HierarchyNamespace (parent as Hierarchy);
+				ret = new HierarchyNamespace (Context, parent as Hierarchy);
 			else if (type == typeof (HierarchyClass))
-				ret = new HierarchyClass (parent as HierarchyNamespace);
+				ret = new HierarchyClass (Context, parent as HierarchyNamespace);
 			else if (type == typeof (HierarchyImplements))
-				ret = new HierarchyImplements (parent as HierarchyObject);
+				ret = new HierarchyImplements (Context, parent as HierarchyObject);
 			else if (type == typeof (HierarchyMethod))
-				ret = new HierarchyMethod (parent as HierarchyObject);
+				ret = new HierarchyMethod (Context, parent as HierarchyObject);
 			else if (type == typeof (HierarchyConstructor))
-				ret = new HierarchyConstructor (parent as HierarchyObject);
+				ret = new HierarchyConstructor (Context, parent as HierarchyObject);
 			else if (type == typeof (HierarchyException))
-				ret = new HierarchyException (parent as HierarchyMethod);
+				ret = new HierarchyException (Context, parent as HierarchyMethod);
 			else if (type == typeof (HierarchyTypeParameter))
-				ret = new HierarchyTypeParameter (parent as HierarchyElement);
+				ret = new HierarchyTypeParameter (Context, parent as HierarchyElement);
 			else if (type == typeof (HierarchyTypeParameterGenericConstraint))
-				ret = new HierarchyTypeParameterGenericConstraint (parent as HierarchyTypeParameter);
+				ret = new HierarchyTypeParameterGenericConstraint (Context, parent as HierarchyTypeParameter);
 			else if (type == typeof (HierarchyMethodParameter))
-				ret = new HierarchyMethodParameter (parent as HierarchyMethod);
+				ret = new HierarchyMethodParameter (Context, parent as HierarchyMethod);
 			else if (type == typeof (HierarchyField))
-				ret = new HierarchyField (parent as HierarchyObject);
+				ret = new HierarchyField (Context, parent as HierarchyObject);
 			else if (type == typeof (HierarchyInterface))
-				ret = new HierarchyInterface (parent as HierarchyNamespace);
+				ret = new HierarchyInterface (Context, parent as HierarchyNamespace);
 			else if (type == typeof (HierarchyEnum))
-				ret = new HierarchyEnum (parent as Hierarchy);
+				ret = new HierarchyEnum (Context, parent as Hierarchy);
 			else
 				throw new InvalidOperationException ($"Unsupported hierarchy element type {type}");
 

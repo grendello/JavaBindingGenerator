@@ -42,7 +42,7 @@ namespace Java.Interop.Bindings.Compiler
 		// public string InterfaceBounds { get; set; }
 		// public string JniInterfaceBounds { get; set; }
 
-		public HierarchyTypeParameter (HierarchyBase parent) : base (parent)
+		public HierarchyTypeParameter (GeneratorContext context, HierarchyBase parent) : base (context, parent)
 		{
 		}
 

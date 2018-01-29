@@ -45,7 +45,7 @@ namespace Java.Interop.Bindings.Compiler
 		public string Value { get; set; }
 		public bool Volatile { get; set; }
 
-		public HierarchyField (HierarchyObject parent) : base (parent)
+		public HierarchyField (GeneratorContext context, HierarchyObject parent) : base (context, parent)
 		{ }
 
 		public override void Init (ApiElement apiElement)
